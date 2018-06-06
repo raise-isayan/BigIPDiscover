@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BigIpDiscover" default="release" basedir="." >
+
+    <!-- Load our properties -->
+    <property file="release.properties"/>
+    <property name="dist.dir" value="."/>
+    <property name="dist.zip" value="BigIpDiscover.${version}.zip"/>
+
+    <target name="release">
+        <antcall target="margepkg"/>
+        <antcall target="releasepkg"/>
+    </target>
+
+    <target name="margepkg">
+        <jar destfile="release/BigIpDiscover.jar" update="false" manifest="MANIFEST.MF">
+            <zipgroupfileset dir="dist/" includes="*.jar" />
+            <zipgroupfileset dir="dist/lib" includes="*.jar" />
+        </jar>
+    </target>
+
+    <target name="releasepkg">
+        <zip basedir="." destfile="${dist.zip}" update="false">
+            <include name="**"/>
+            <exclude name="dist/**"/>
+            <exclude name="nbproject/configs/**"/>
+            <exclude name="nbproject/private/**"/>
+            <exclude name="help/html/**"/>
+            <exclude name="help/pdf/**"/>
+            <exclude name="build/**"/>
+            <exclude name="**/.svn"/>
+            <exclude name="**/.git"/>
+            <exclude name="*.zip"/>
+            <exclude name="*.log"/>
+            <exclude name="*.log.lck"/>
+            <exclude name="burp.extender.xml"/>
+        </zip>
+    </target>
+
+    <target name="mkhash">
+       <checksum file="${dist.zip}" algorithm="md5" fileext=".md5"/>
+       <checksum file="${dist.zip}" algorithm="SHA-1" fileext=".sha1"/>
+    </target>
+
+    <target name="clean">
+      <delete dir="/build"/>
+      <delete dir="/dist"/>
+    </target>
+    
+</project>
