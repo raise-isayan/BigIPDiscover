@@ -109,7 +109,6 @@ public class BigIpDecrypt {
                 decryptList.addAll(parseDecryptList(cookieAll, cookieOffset));
             }
         } else {
-            BigIpDecrypt bigIP = new BigIpDecrypt();
             // Set-Cookieの取得
             Matcher m = RESPONSE_COOKE.matcher(message);
             while (m.find()) {

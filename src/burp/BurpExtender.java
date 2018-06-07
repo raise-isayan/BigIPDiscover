@@ -72,8 +72,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                 // Request判定
                 if (bigIpList.length == 0 && getScan().getScanRequest() && baseRequestResponse.getRequest() != null) {
                     // ヘッダのみ抽出（逆に遅くなってるかも？）
-                    IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(baseRequestResponse.getResponse());
-                    byte reqHeader [] = Arrays.copyOfRange(baseRequestResponse.getResponse(), 0, reqInfo.getBodyOffset());
+                    IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(baseRequestResponse.getRequest());
+                    byte reqHeader [] = Arrays.copyOfRange(baseRequestResponse.getRequest(), 0, reqInfo.getBodyOffset());
                     bigIpList = BigIpDecrypt.parseDecrypts(true, reqHeader);                    
                 }
                 List<BigIpDecrypt> privateIPList = new ArrayList<>();                
@@ -212,8 +212,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             // Request判定
             if (bigIpList.length == 0 && getScan().getScanRequest() && messageInfo.getRequest() != null) {
                 // ヘッダのみ抽出（逆に遅くなってるかも？）
-                IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getResponse());
-                byte reqHeader [] = Arrays.copyOfRange(messageInfo.getResponse(), 0, reqInfo.getBodyOffset());
+                IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getRequest());
+                byte reqHeader [] = Arrays.copyOfRange(messageInfo.getRequest(), 0, reqInfo.getBodyOffset());
                 bigIpList = BigIpDecrypt.parseDecrypts(true, reqHeader);
             }
             StringBuilder buff = new StringBuilder();
