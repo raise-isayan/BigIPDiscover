@@ -49,21 +49,21 @@ BigIPのスキャンオプションの設定を行います。
 Scan Header
 スキャン対象を指定します。
  + Response Set-Cookie
- ++ 設定をはずすことはできません
+     + 設定をはずすことはできません
  + Request Cookie
- ++ Request Cookie もスキャン対象とします。
+     + Request Cookie もスキャン対象とします。
 
-Scan Option
-検出する
- + Response Set-Cookie
-
+Detection Option
+検出する対象の設定
+ + Privat IP Only
+     + Private IP のみを検出します。
 
 Free version scan option
- ~ Freeバージョンのみで有効な設定です。
- ~ + item highlight
-   ++ マッチした場合にHistoryにつける色を指定します。
- ~ + comment
-   ++ マッチした場合にコメントを書き換えます。
+Freeバージョンのみで有効な設定です。
+  + item highlight
+      + 検出した場合にHistoryにつける色を指定します。
+  + comment
+      + 検出した場合にコメントを書き換えます。
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
