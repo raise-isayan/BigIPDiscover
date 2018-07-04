@@ -55,12 +55,15 @@ public final class Config {
         EnumSet<MatchItem.NotifyType> notyfyset = EnumSet.noneOf(MatchItem.NotifyType.class);
         notyfyset.addAll(MatchItem.NotifyType.enumSetValueOf(notyfys));
         scan.setNotifyTypes(notyfyset);
-
+        
         if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
             String highlightColor = prop.readEntry("scan", "highlightColor", "");
             scan.setHighlightColor(MatchItem.HighlightColor.valueOf(highlightColor));
         }
 
+        // Detection
+        scan.setDetectionPrivateIP(prop.readEntryBool("detection", "detectionPrivateIP", true));
+        
     }
 
     /**
@@ -84,6 +87,8 @@ public final class Config {
 
     protected static void saveToXML(IniProp prop, OptionProperty option) throws IOException {
         ScanProperty scan = option.getScan();
+
+        // Scan
         prop.writeEntryBool("scan", "request", scan.getScanRequest());
         prop.writeEntryBool("scan", "response", scan.getScanResponse());
 
@@ -92,7 +97,10 @@ public final class Config {
         if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
             prop.writeEntry("scan", "highlightColor", scan.getHighlightColor().name());
         }
-
+        
+        // Detection
+        prop.writeEntryBool("detection", "privateIP", scan.isDetectionPrivateIP());
+       
     }
 
 }

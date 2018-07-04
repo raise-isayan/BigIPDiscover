@@ -34,6 +34,22 @@ public class ScanProperty {
         this.scanResponse = value;
     }
 
+    private boolean detectionPrivateIP = true;
+    
+    /**
+     * @return the detectionPrivateIP
+     */
+    public boolean isDetectionPrivateIP() {
+        return detectionPrivateIP;
+    }
+
+    /**
+     * @param scanPrivateIP the detectionPrivateIP to set
+     */
+    public void setDetectionPrivateIP(boolean detectionPrivateIP) {
+        this.detectionPrivateIP = detectionPrivateIP;
+    }
+    
     private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.noneOf(MatchItem.NotifyType.class);
 
     /**

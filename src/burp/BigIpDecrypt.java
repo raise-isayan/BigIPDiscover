@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  */
 public class BigIpDecrypt {
 
+    private boolean messageIsRequest = false;
     private String ipAddr = "";
     private String encryptCookie = "";
     private int startPos = -1;
@@ -106,7 +107,7 @@ public class BigIpDecrypt {
             while (m.find()) {
                 cookieOffset = m.start(1);
                 cookieAll = m.group(1);
-                decryptList.addAll(parseDecryptList(cookieAll, cookieOffset));
+                decryptList.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         } else {
             // Set-Cookieの取得
@@ -114,13 +115,13 @@ public class BigIpDecrypt {
             while (m.find()) {
                 cookieOffset = m.start(1);
                 cookieAll = m.group(1);
-                decryptList.addAll(parseDecryptList(cookieAll, cookieOffset));
+                decryptList.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         }
         return decryptList.toArray(new BigIpDecrypt[0]);
     }
 
-    private static List<BigIpDecrypt> parseDecryptList(String cookieAll, int cookieOffset) {
+    protected static List<BigIpDecrypt> parseDecryptList(boolean messageIsRequest, String cookieAll, int cookieOffset) {
         List<BigIpDecrypt> decryptList = new ArrayList<>();
         if (cookieAll != null) {
             Matcher m = BIGIP_COOKIE.matcher(cookieAll);
@@ -132,6 +133,7 @@ public class BigIpDecrypt {
                 if (ip_addr != null) {
                     bigIP.startsBIGipServer = cookieName.startsWith("BIGipServer");
                     bigIP.ipAddr = ip_addr;
+                    bigIP.messageIsRequest = messageIsRequest;
                     bigIP.encryptCookie = cookieValue;
                     bigIP.startPos = cookieOffset + m.start();
                     bigIP.endPos = cookieOffset + m.end();
@@ -196,6 +198,10 @@ public class BigIpDecrypt {
         return this.encryptCookie;
     }
 
+    public boolean messageIsRequest() {
+        return this.messageIsRequest;
+    }
+    
     public String getIPAddr() {
         return this.ipAddr;
     }

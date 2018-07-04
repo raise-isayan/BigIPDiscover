@@ -6,6 +6,7 @@
 package burp;
 
 import extend.util.Util;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -130,6 +131,22 @@ public class BigIpEncryptTest {
 
     }
 
+    /**
+     * Test of decrypt method, of class BigIpDecrypt.
+     */
+    @Test
+    public void testBigIpEncryptList_Req1() {
+        System.out.println("BigIpEncrypt Req1");
+        List<BigIpDecrypt> bigIP1 = BigIpDecrypt.parseDecryptList(true, "BIGipServer_aa_bb_cc=1677787402.36895.0000", 0);
+        assertEquals("10.1.1.100:8080", bigIP1.get(0).getIPAddr());        
+        assertEquals(true, bigIP1.get(0).startsBIGipServer());        
+        
+        List<BigIpDecrypt> bigIP2 = BigIpDecrypt.parseDecryptList(true, "aa_bb_cc=1677787402.36895.0000", 0);
+        assertEquals("10.1.1.100:8080", bigIP2.get(0).getIPAddr());        
+        assertEquals(false, bigIP2.get(0).startsBIGipServer());        
+    }
+    
+    
 
     /**
      * Test of decrypt method, of class BigIpDecrypt.

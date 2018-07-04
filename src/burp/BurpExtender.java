@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,6 +27,14 @@ import java.util.logging.Logger;
 public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener, OptionProperty {
     private final BigIpDecryptTab tabbetOption = new BigIpDecryptTab();
     private boolean burpProfessional = false;
+   
+    public static BurpExtender getInstance() {
+        return BurpExtenderImpl.<BurpExtender>getInstance();
+    }
+    
+    public boolean isProfessional() {
+        return burpProfessional;
+    }
     
     @Override
     /* IBurpExtender interface implements method */
@@ -61,40 +70,55 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         return new IScannerCheck() {
             @Override
             public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
+                List<IScanIssue> issue = null;
                 BigIpDecrypt [] bigIpList = new BigIpDecrypt[0];
                 // Response判定
-                if (bigIpList.length == 0 && getScan().getScanResponse() && baseRequestResponse.getResponse() != null) {
+                if (issue == null && getScan().getScanResponse() && baseRequestResponse.getResponse() != null) {
                     // ヘッダのみ抽出（逆に遅くなってるかも？）
                     IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(baseRequestResponse.getResponse());
                     byte resHeader [] = Arrays.copyOfRange(baseRequestResponse.getResponse(), 0, resInfo.getBodyOffset());
                     bigIpList = BigIpDecrypt.parseDecrypts(false, resHeader);
+                    issue = makeIssueList(false, baseRequestResponse, bigIpList);
                 }
                 // Request判定
-                if (bigIpList.length == 0 && getScan().getScanRequest() && baseRequestResponse.getRequest() != null) {
+                if (issue == null && getScan().getScanRequest() && baseRequestResponse.getRequest() != null) {
                     // ヘッダのみ抽出（逆に遅くなってるかも？）
                     IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(baseRequestResponse.getRequest());
                     byte reqHeader [] = Arrays.copyOfRange(baseRequestResponse.getRequest(), 0, reqInfo.getBodyOffset());
-                    bigIpList = BigIpDecrypt.parseDecrypts(true, reqHeader);                    
+                    bigIpList = BigIpDecrypt.parseDecrypts(true, reqHeader);
+                    issue = makeIssueList(true, baseRequestResponse, bigIpList);
                 }
-                List<BigIpDecrypt> privateIPList = new ArrayList<>();                
-                List<int []> responseMarkers = new ArrayList<>();                
+                return issue;
+            }
+
+            public List<IScanIssue> makeIssueList(boolean messageIsRequest, IHttpRequestResponse baseRequestResponse, BigIpDecrypt [] bigIpList) {
+                List<BigIpDecrypt> markIPList = new ArrayList<>();                
+                List<int []> requestResponseMarkers = new ArrayList<>();                
                 for (int i = 0; i < bigIpList.length; i++) {
-                    if (bigIpList[i].isPrivateIP()) {
-                        privateIPList.add(bigIpList[i]);
-                        responseMarkers.add(new int[]{ bigIpList[i].start(), bigIpList[i].end()});
-                    }                                                            
+                    // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+                    if (getScan().isDetectionPrivateIP() && !bigIpList[i].isPrivateIP()) {
+                        continue;
+                    }
+                    markIPList.add(bigIpList[i]);
+                    requestResponseMarkers.add(new int[]{ bigIpList[i].start(), bigIpList[i].end()});                    
                 }
-                IHttpRequestResponseWithMarkers messageInfoMark = getCallbacks().applyMarkers(baseRequestResponse, null, responseMarkers);
-                if (privateIPList.size() > 0) {
+                IHttpRequestResponseWithMarkers messageInfoMark = null;
+                if (messageIsRequest) {
+                    messageInfoMark = getCallbacks().applyMarkers(baseRequestResponse, requestResponseMarkers, null);            
+                } else {
+                    messageInfoMark = getCallbacks().applyMarkers(baseRequestResponse, null, requestResponseMarkers);            
+                }
+
+                if (markIPList.size() > 0) {
                     List<IScanIssue> issues = new ArrayList<>();
-                    issues.add(makeIssue(privateIPList, messageInfoMark));
+                    issues.add(makeIssue(markIPList, messageInfoMark));
                     return issues;                
                 }
                 else {
                     return null;
-                }
+                }                
             }
-
+                        
             @Override
             public List<IScanIssue> doActiveScan(IHttpRequestResponse baseRequestResponse, IScannerInsertionPoint insertionPoint) {
                 return null;
@@ -112,7 +136,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         };
     }
 
-    public IScanIssue makeIssue(final  List<BigIpDecrypt> privateIPList, final IHttpRequestResponse messageInfo) {
+    public IScanIssue makeIssue(final List<BigIpDecrypt> markIPList, final IHttpRequestResponse messageInfo) {
 
         return new IScanIssue() {
             @Override
@@ -136,7 +160,14 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public String getSeverity() {
-                return "Information";
+                String severity = "Information";
+                for (BigIpDecrypt markIP: markIPList) {
+                    if (markIP.isPrivateIP()) {
+                        severity = "Low";  
+                        break; // ひとつでもPrivateIPがあればリスクをLowに
+                    }
+                }
+                return severity;
             }
 
             @Override
@@ -147,36 +178,65 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             @Override
             public String getIssueBackground() {
                 final String ISSUE_BACKGROUND =  "\r\n"
-                    + "https://www.owasp.org/index.php/SCG_D_BIGIP<br />"
-                    + "https://support.f5.com/csp/article/K6917<br />"
-                    + "Examples.<br />"
-                    + "  BIGipServer<pool_name>=1677787402.36895.0000<br />" 
-                    + "  BIGipServer<pool_name>=vi20010112000000000000000000000030.20480<br />"
-                    + "  BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80<br />" 
-                    + "  BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80<br />";
+                    + "<h4>Reference:</h4>"
+                    + "<ul>" 
+                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
+                    + "<ul>" 
+                    + "<h4>Examples:</h4>"
+                    + "<ul>" 
+                    + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>" 
+                    + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
+                    + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>" 
+                    + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
+                    + "<ul>" ;
                 return ISSUE_BACKGROUND;
             }
 
             @Override
             public String getRemediationBackground() {
                 final String REMEDIATION_BACKGROUND =  "\r\n"
-                    + "https://support.f5.com/csp/article/K6917\r\n";
+                    + "<h4>Reference:</h4>"
+                    + "<ul>" 
+                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
+                    + "<ul>" ;
                 return REMEDIATION_BACKGROUND;
             }
 
             @Override
             public String getIssueDetail() {
-                StringBuilder buff = new StringBuilder();
-                for (BigIpDecrypt privateIP : privateIPList) {
-                    buff.append(String.format("* cookie: %s\r\nip address:%s", privateIP.getEncryptCookie(), privateIP.getIPAddr()));
-                    buff.append("\r\n");
+                final String ISSUE_DETAIL =  "\r\n"
+                    + "<h4>Datail:</h4>"
+                    + "%s";
+
+                StringBuffer buff = new StringBuffer();
+                for (BigIpDecrypt markIP : markIPList) {
+                    buff.append("<h5>Cookie:</h5>");
+                    buff.append("<ul>");
+                    buff.append("<li>");
+                    buff.append(String.format("cookie: %s", markIP.getEncryptCookie()));
+                    buff.append("</li>");
+                    buff.append("<li>");
+                    buff.append(String.format("ip address:%s", markIP.getIPAddr()));
+                    buff.append("</li>");
+                    buff.append("<li>");
+                    buff.append(String.format("private ip:%s", markIP.isPrivateIP()));
+                    buff.append("</li>");
+                    buff.append("</ul>");
                 }
-                return buff.toString();
+                return String.format(ISSUE_DETAIL, buff.toString());
             }
 
             @Override
             public String getRemediationDetail() {
-                return "omission";
+                final String REMEDIATION_DETAIL =  "\r\n"
+                    + "<h4>Reference:</h4>"
+                    + "<ul>" 
+                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
+                    + "<ul>" ;
+                return REMEDIATION_DETAIL;
             }
 
             @Override
@@ -218,15 +278,18 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             }
             StringBuilder buff = new StringBuilder();
             for (int i = 0; i < bigIpList.length; i++) {
-                if (bigIpList[i].isPrivateIP()) {
-                    if (buff.length() == 0) {
-                        buff.append("BigIP:");
-                    }
-                    else {
-                        buff.append(", ");                    
-                    }
-                    buff.append(bigIpList[i].getIPAddr());                                
+                //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
+                // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+                if (getScan().isDetectionPrivateIP() && !bigIpList[i].isPrivateIP()) {
+                    continue;
                 }
+                if (buff.length() == 0) {
+                    buff.append("BigIP:");
+                }
+                else {
+                    buff.append(", ");                    
+                }
+                buff.append(bigIpList[i].getIPAddr());                                
             }
             if (buff.length() > 0) {
                 ScanProperty scan = this.getScan();
@@ -239,7 +302,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             }
             
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -250,8 +313,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             public void propertyChange(PropertyChangeEvent evt) {
                 if (BigIpDecryptTab.OPTION_PROPERTY.equals(evt.getPropertyName())) {
                     setScan(tabbetOption.getScanProperty());
-                    System.out.println(getScan().getNotifyTypes());
-                    System.out.println(getScan().getHighlightColor());
+                    //System.out.println(getScan().getNotifyTypes() + ":" + getScan().getHighlightColor());
                     applyOptionProperty();  
                 }
             }
@@ -289,6 +351,13 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     public void setScan(ScanProperty scan) {
         this.scanProperty = scan;
     }
-        
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+//        burp.StartBurp.main(args);
+    }
+    
                    
 }
