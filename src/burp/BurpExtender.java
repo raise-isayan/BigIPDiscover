@@ -206,13 +206,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public String getIssueDetail() {
-                final String ISSUE_DETAIL =  "\r\n"
-                    + "<h4>Datail:</h4>"
-                    + "%s";
-
                 StringBuffer buff = new StringBuffer();
                 for (BigIpDecrypt markIP : markIPList) {
-                    buff.append("<h5>Cookie:</h5>");
+                    buff.append("<h4>Cookie:</h4>");
                     buff.append("<ul>");
                     buff.append("<li>");
                     buff.append(String.format("cookie: %s", markIP.getEncryptCookie()));
@@ -225,7 +221,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                     buff.append("</li>");
                     buff.append("</ul>");
                 }
-                return String.format(ISSUE_DETAIL, buff.toString());
+                return buff.toString();
             }
 
             @Override
