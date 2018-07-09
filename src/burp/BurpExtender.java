@@ -195,13 +195,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public String getRemediationBackground() {
-                final String REMEDIATION_BACKGROUND =  "\r\n"
-                    + "<h4>Reference:</h4>"
-                    + "<ul>" 
-                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
-                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
-                    + "<ul>" ;
-                return REMEDIATION_BACKGROUND;
+                return null;
             }
 
             @Override
@@ -226,13 +220,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public String getRemediationDetail() {
-                final String REMEDIATION_DETAIL =  "\r\n"
-                    + "<h4>Reference:</h4>"
-                    + "<ul>" 
-                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
-                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
-                    + "<ul>" ;
-                return REMEDIATION_DETAIL;
+                return null;
             }
 
             @Override

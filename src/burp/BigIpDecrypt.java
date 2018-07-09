@@ -9,6 +9,7 @@ import extend.util.Util;
 import java.nio.ByteOrder;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +36,9 @@ public class BigIpDecrypt {
     public static void main(String[] args) {
         try {
             String encrypt_value = null;
-            for (String arg : args) {
-                String[] param = arg.split("=", 2);
-                if (param.length < 2) {
+            for (int i = 0; i < args.length; i++) {
+            	String[] param = Arrays.copyOfRange(args, i, args.length);
+                if (param.length < 1) {
                     throw new IllegalArgumentException("argment err:" + String.join(" ", param));
                 }
                 if ("-d".equals(param[0])) {
@@ -53,8 +54,8 @@ public class BigIpDecrypt {
             }
 
             String bigIPaddr = BigIpDecrypt.decrypt(encrypt_value);
-            System.out.println(bigIPaddr);
-            System.out.println("PrivateIP:" + IpUtil.isPrivateIP(bigIPaddr));
+            System.out.println("IP addres: " + bigIPaddr);
+            System.out.println("PrivateIP: " + IpUtil.isPrivateIP(bigIPaddr));
 
         } catch (Exception ex) {
             String errmsg = String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
@@ -65,17 +66,19 @@ public class BigIpDecrypt {
     }
 
     private static void usage() {
-        System.out.println(String.format("Usage: java -jar %s.jar -d=<encrypt>", BigIpDecrypt.class.getSimpleName()));
-        System.out.println("");
+        System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", BigIpDecrypt.class.getSimpleName()));
+        System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", BigIpDecrypt.class.getSimpleName()));
     }
 
     /**
      * https://www.owasp.org/index.php/SCG_D_BIGIP
+     * https://support.f5.com/csp/article/K6917
+     *
      * BIGipServer<pool_name>=1677787402.36895.0000
      * BIGipServer<pool_name>=vi20010112000000000000000000000030.20480
      * BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80
      * BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80
-    **
+     *
      */
     private final static String IPv4_PREFIX = "00000000000000000000ffff";
     private final static Pattern BIGIP_COOKIE = Pattern.compile("(BIGipServer[^\\s=]*?|[^\\s=]*?)=([0-9a-z.]+)");

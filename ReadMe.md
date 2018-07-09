@@ -65,9 +65,25 @@ Freeバージョンのみで有効な設定です。
   + comment
       + 検出した場合にコメントを書き換えます。
 
+## コマンドラインオプション
+
+コマンドラインからCookieの値をデコードすることが可能です。
+
+```
+java -jar BigIpDecrypt.jar -d <encrypt>
+```
+
+<encrypt> にデコードしたいCookieを指定します。
+例を示します。
+
+例)
+```
+java -jar BigIpDecrypt.jar -d BIGipServer16122=1677787402.36895.0000
+```
+
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
-* BurpExtlib v1.7.31
+* BurpExtlib v1.7.32
 
 以下のバージョンで動作確認しています。
 
