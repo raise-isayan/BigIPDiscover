@@ -2,9 +2,9 @@
 <project name="BigIpDiscover" default="release" basedir="." >
 
     <!-- Load our properties -->
-    <property file="release.properties"/>
+    <property file="src/burp/release.properties"/>
     <property name="dist.dir" value="."/>
-    <property name="dist.zip" value="BigIpDiscover.${version}.zip"/>
+    <property name="dist.zip" value="${projname}.${version}.zip"/>
 
     <target name="release">
         <antcall target="margepkg"/>
@@ -12,7 +12,7 @@
     </target>
 
     <target name="margepkg">
-        <jar destfile="release/BigIpDiscover.jar" update="false" manifest="MANIFEST.MF">
+        <jar destfile="release/${projname}.jar" update="false" manifest="MANIFEST.MF">
             <zipgroupfileset dir="dist/" includes="*.jar" />
             <zipgroupfileset dir="dist/lib" includes="*.jar" />
         </jar>

@@ -30,19 +30,34 @@ public class BigIpDecrypt {
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
 
+    final static java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/release");
+
+    private static String getVersion() {
+        return bundle.getString("version");
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         try {
             String encrypt_value = null;
-            for (int i = 0; i < args.length; i++) {
+            for (int i = 0; i < args.length; i+=2) {
             	String[] param = Arrays.copyOfRange(args, i, args.length);
-                if (param.length < 1) {
-                    throw new IllegalArgumentException("argment err:" + String.join(" ", param));
+                if (param.length > 1) {
+                    if ("-d".equals(param[0])) {
+                        encrypt_value = param[1];
+                    }
                 }
-                if ("-d".equals(param[0])) {
-                    encrypt_value = param[1];
+                else if (param.length > 0) {
+                    if ("-v".equals(param[0])) {
+                        System.out.print("Version: " + getVersion());
+                        System.exit(0);
+                    }
+                
+                }
+                else {
+                    throw new IllegalArgumentException("argment err:" + String.join(" ", param));
                 }
             }
 
@@ -66,8 +81,9 @@ public class BigIpDecrypt {
     }
 
     private static void usage() {
-        System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", BigIpDecrypt.class.getSimpleName()));
-        System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", BigIpDecrypt.class.getSimpleName()));
+        final String projname = bundle.getString("projname");
+        System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", projname));
+        System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", projname));
     }
 
     /**
