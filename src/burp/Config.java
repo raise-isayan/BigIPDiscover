@@ -62,7 +62,7 @@ public final class Config {
         }
 
         // Detection
-        scan.setDetectionPrivateIP(prop.readEntryBool("detection", "detectionPrivateIP", true));
+        scan.setDetectionPrivateIP(prop.readEntryBool("detection", "privateIP", true));
         
     }
 

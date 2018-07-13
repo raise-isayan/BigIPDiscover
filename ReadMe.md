@@ -10,6 +10,7 @@ BipIPサーバが設定するCookieにはプライベートIPが含まれる場�
 脆弱性の詳細については以下を参照してください。
 
 * https://www.owasp.org/index.php/SCG_D_BIGIP
+* https://support.f5.com/csp/article/K6917
 
 Examples
 ````
@@ -70,7 +71,7 @@ Freeバージョンのみで有効な設定です。
 コマンドラインからCookieの値をデコードすることが可能です。
 
 ```
-java -jar BigIpDecrypt.jar -d <encrypt>
+java -jar BigIpDiscover.jar -d <encrypt>
 ```
 
 <encrypt> にデコードしたいCookieを指定します。
@@ -78,7 +79,7 @@ java -jar BigIpDecrypt.jar -d <encrypt>
 
 例)
 ```
-java -jar BigIpDecrypt.jar -d BIGipServer16122=1677787402.36895.0000
+java -jar BigIpDiscover.jar -d BIGipServer16122=1677787402.36895.0000
 ```
 
 ## 必須ライブラリ
