@@ -98,7 +98,7 @@ public class BigIpDecrypt {
      */
     private final static String IPv4_PREFIX = "00000000000000000000ffff";
     private final static Pattern BIGIP_COOKIE = Pattern.compile("(BIGipServer[^\\s=]*?|[^\\s=]*?)=([0-9a-z.]+)");
-    private final static Pattern BIGIP_STANDARD = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
+    private final static Pattern BIGIP_STANDARD = Pattern.compile("(\\d+)\\.(\\d+)\\.0000");
     private final static Pattern BIGIP_STANDARD_VI = Pattern.compile("vi(\\d+)\\.(\\d+)");
     private final static Pattern BIGIP_STANDARD_RD = Pattern.compile("rd\\d+o([0-9a-z]+)o(\\d+)");
 

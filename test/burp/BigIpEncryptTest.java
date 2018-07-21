@@ -246,6 +246,22 @@ public class BigIpEncryptTest {
         
     }
             
+
+    /**
+     * Test of decrypt2 method, of class BigIpDecrypt.
+     */
+    @Test
+    public void testDecrypt2() {
+        System.out.println("decrypt2");
+        String ip1 = BigIpDecrypt.decrypt("10.1.1.100");
+        assertEquals(null, ip1);        
+
+        String ip2 = BigIpDecrypt.decrypt("192.0.2.1");
+        assertEquals(null, ip2);        
+        
+    }
+
+
     /**
      * Test of start and End method, of class BigIpDecrypt.
      */

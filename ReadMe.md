@@ -4,7 +4,7 @@ Burp suite 拡張 BigIPDiscover
 
 ## 概要
 
-BipIPサーバが設定するCookieにはプライベートIPが含まれる場合があり、そのIPを検出するための
+F5ネットワークスのBIG-IPが設定するCookieにはプライベートIPが含まれる場合があり、そのIPを検出するための
 拡張になります。
 
 脆弱性の詳細については以下を参照してください。
@@ -80,6 +80,8 @@ java -jar BigIpDiscover.jar -d <encrypt>
 例)
 ```
 java -jar BigIpDiscover.jar -d BIGipServer16122=1677787402.36895.0000
+IP addres: 10.1.1.100:8080
+PrivateIP: true
 ```
 
 ## 必須ライブラリ

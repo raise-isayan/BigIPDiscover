@@ -44,13 +44,13 @@ public class ScanProperty {
     }
 
     /**
-     * @param scanPrivateIP the detectionPrivateIP to set
+     * @param detectionPrivateIP the detectionPrivateIP to set
      */
     public void setDetectionPrivateIP(boolean detectionPrivateIP) {
         this.detectionPrivateIP = detectionPrivateIP;
     }
     
-    private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.noneOf(MatchItem.NotifyType.class);
+    private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.allOf(MatchItem.NotifyType.class);
 
     /**
      * @return the notifyTypes
@@ -66,7 +66,7 @@ public class ScanProperty {
         this.notifyTypes = notifyTypes;
     }
 
-    private MatchItem.HighlightColor highlightColor = null;
+    private MatchItem.HighlightColor highlightColor = MatchItem.HighlightColor.RED;
 
     /**
      * @return the highlightColor
