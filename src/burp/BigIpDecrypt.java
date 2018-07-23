@@ -23,6 +23,7 @@ public class BigIpDecrypt {
 
     private boolean messageIsRequest = false;
     private String ipAddr = "";
+    private String selectionCookie = "";
     private String encryptCookie = "";
     private int startPos = -1;
     private int endPos = -1;
@@ -30,33 +31,35 @@ public class BigIpDecrypt {
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
 
-    final static java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/release");
+    private final static java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/release");
 
     private static String getVersion() {
         return bundle.getString("version");
     }
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         try {
             String encrypt_value = null;
-            for (int i = 0; i < args.length; i+=2) {
-            	String[] param = Arrays.copyOfRange(args, i, args.length);
+            for (int i = 0; i < args.length; i += 2) {
+                String[] param = Arrays.copyOfRange(args, i, args.length);
                 if (param.length > 1) {
                     if ("-d".equals(param[0])) {
                         encrypt_value = param[1];
                     }
-                }
-                else if (param.length > 0) {
+                } else if (param.length > 0) {
                     if ("-v".equals(param[0])) {
                         System.out.print("Version: " + getVersion());
                         System.exit(0);
                     }
-                
-                }
-                else {
+                    if ("-h".equals(param[0])) {
+                        usage();
+                        System.exit(0);
+                    }
+
+                } else {
                     throw new IllegalArgumentException("argment err:" + String.join(" ", param));
                 }
             }
@@ -153,6 +156,7 @@ public class BigIpDecrypt {
                     bigIP.startsBIGipServer = cookieName.startsWith("BIGipServer");
                     bigIP.ipAddr = ip_addr;
                     bigIP.messageIsRequest = messageIsRequest;
+                    bigIP.selectionCookie = m.group(0);
                     bigIP.encryptCookie = cookieValue;
                     bigIP.startPos = cookieOffset + m.start();
                     bigIP.endPos = cookieOffset + m.end();
@@ -213,6 +217,10 @@ public class BigIpDecrypt {
         return this.startsBIGipServer;
     }
 
+    public String getSelectionCookie() {
+        return this.selectionCookie;
+    }
+
     public String getEncryptCookie() {
         return this.encryptCookie;
     }
@@ -220,7 +228,7 @@ public class BigIpDecrypt {
     public boolean messageIsRequest() {
         return this.messageIsRequest;
     }
-    
+
     public String getIPAddr() {
         return this.ipAddr;
     }

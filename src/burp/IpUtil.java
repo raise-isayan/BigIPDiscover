@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class IpUtil {
-
     private final static Pattern IPv4_ADDR = Pattern.compile("([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})");
     private final static Pattern IPv4_HEX = Pattern.compile("([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})");
     private final static Pattern IPv6_HEX = Pattern.compile("([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})");
