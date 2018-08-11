@@ -31,10 +31,10 @@ public class BigIpDecrypt {
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
 
-    private final static java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("burp/release");
+    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
 
     private static String getVersion() {
-        return bundle.getString("version");
+        return BUNDLE.getString("version");
     }
 
     /**
@@ -84,7 +84,7 @@ public class BigIpDecrypt {
     }
 
     private static void usage() {
-        final String projname = bundle.getString("projname");
+        final String projname = BUNDLE.getString("projname");
         System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", projname));
         System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", projname));
     }

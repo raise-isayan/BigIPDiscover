@@ -5,7 +5,6 @@
  */
 package burp;
 
-import static burp.BurpExtenderImpl.getCallbacks;
 import extend.util.BurpWrap;
 import extend.util.ConvertUtil;
 import extend.view.base.MatchItem;

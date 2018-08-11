@@ -5,7 +5,10 @@
  */
 package burp;
 
+import java.nio.ByteOrder;
 import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,7 +61,6 @@ public class IpUtilTest {
 
             assertEquals(IpUtil.isPrivateIP("255.255.255.1"), false);
 
-
         } catch (ParseException ex) {
             fail(ex.getMessage());
         }
@@ -89,7 +91,14 @@ public class IpUtilTest {
      */
     @Test
     public void testIPv4ToDecimal() {
-        System.out.println("IPv4ToDecimal");
+        try {
+            System.out.println("IPv4ToDecimal");
+            String raw_ip = "10.1.1.100";
+            long result = IpUtil.IPv4ToDecimal(raw_ip, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(1677787402L, result);
+        } catch (ParseException ex) {
+            fail(ex.getMessage());
+        }
     }
 
     /**
@@ -98,6 +107,9 @@ public class IpUtilTest {
     @Test
     public void testDecimalToIPv4() {
         System.out.println("decimalToIPv4");
+        String enc_ip = "1677787402";
+        String result = IpUtil.decimalToIPv4(Long.parseLong(enc_ip), ByteOrder.LITTLE_ENDIAN);
+        assertEquals("10.1.1.100", result);
     }
 
     /**
@@ -106,6 +118,9 @@ public class IpUtilTest {
     @Test
     public void testHexToIPv4() {
         System.out.println("hexToIPv4");
+        String enc_ip = "c0000201";
+        String result = IpUtil.hexToIPv4(enc_ip, ByteOrder.BIG_ENDIAN);
+        assertEquals("192.0.2.1", result);            
     }
 
     /**
@@ -114,6 +129,9 @@ public class IpUtilTest {
     @Test
     public void testHexToIPv6() {
         System.out.println("hexToIPv6");
+        String enc_ip = "20010112000000000000000000000030";
+        String result = IpUtil.hexToIPv6(enc_ip);
+        assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]", result);            
     }
 
     /**
@@ -122,6 +140,9 @@ public class IpUtilTest {
     @Test
     public void testDecimalToPort() {
         System.out.println("decimalToPort");
+        int enc_port = 36895;
+        int result = IpUtil.decimalToPort(enc_port, ByteOrder.LITTLE_ENDIAN);
+        assertEquals(8080, result);
     }
     
 }

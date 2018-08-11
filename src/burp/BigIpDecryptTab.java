@@ -60,6 +60,7 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
 
         setLayout(new java.awt.BorderLayout());
 
+        txtDecrypt.setEditable(false);
         txtDecrypt.setColumns(20);
         txtDecrypt.setRows(5);
         jScrollPane1.setViewportView(txtDecrypt);
