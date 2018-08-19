@@ -81,4 +81,13 @@ public class ScanProperty {
     public void setHighlightColor(MatchItem.HighlightColor highlightColor) {
         this.highlightColor = highlightColor;
     }
+
+    public void setProperty(ScanProperty scan) {
+        this.scanRequest = scan.scanRequest;
+        this.scanResponse = scan.scanResponse;
+        this.detectionPrivateIP = scan.detectionPrivateIP;
+        this.notifyTypes = scan.notifyTypes;
+        this.highlightColor = scan.highlightColor;
+    }
+
 }

@@ -20,7 +20,6 @@ import javax.swing.JList;
  * @author isayan
  */
 public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
-    public final static String OPTION_PROPERTY = "OptionPropery";
 
     /**
      * Creates new form BigIpDecryptTab
@@ -290,7 +289,7 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
     }
 
     private void chkRequestStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkRequestStateChanged
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_chkRequestStateChanged
 
     private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
@@ -299,24 +298,24 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
     }//GEN-LAST:event_btnDecryptActionPerformed
 
     private void chk_CommentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chk_CommentStateChanged
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_chk_CommentStateChanged
 
     private void cmbHighlightColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbHighlightColorActionPerformed
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_cmbHighlightColorActionPerformed
 
     private void chkItem_highlightStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkItem_highlightStateChanged
         this.cmbHighlightColor.setEnabled(this.chkItem_highlight.isSelected());
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_chkItem_highlightStateChanged
 
     private void chkPrivateIPStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkPrivateIPStateChanged
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_chkPrivateIPStateChanged
 
     private void chkResponseStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkResponseStateChanged
-        this.firePropertyChange(BigIpDecryptTab.OPTION_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(OptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
     }//GEN-LAST:event_chkResponseStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -10,6 +10,7 @@ package burp;
  * @author isayan
  */
 public interface OptionProperty {
+    public final static String SCAN_PROPERTY = "ScanPropery";
 
     public ScanProperty getScan();
 

@@ -5,6 +5,7 @@
  */
 package burp;
 
+import extend.util.IpUtil;
 import extend.util.Util;
 import java.nio.ByteOrder;
 import java.text.ParseException;
@@ -31,64 +32,6 @@ public class BigIpDecrypt {
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
 
-    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
-
-    private static String getVersion() {
-        return BUNDLE.getString("version");
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        try {
-            String encrypt_value = null;
-            for (int i = 0; i < args.length; i += 2) {
-                String[] param = Arrays.copyOfRange(args, i, args.length);
-                if (param.length > 1) {
-                    if ("-d".equals(param[0])) {
-                        encrypt_value = param[1];
-                    }
-                } else if (param.length > 0) {
-                    if ("-v".equals(param[0])) {
-                        System.out.print("Version: " + getVersion());
-                        System.exit(0);
-                    }
-                    if ("-h".equals(param[0])) {
-                        usage();
-                        System.exit(0);
-                    }
-
-                } else {
-                    throw new IllegalArgumentException("argment err:" + String.join(" ", param));
-                }
-            }
-
-            // 必須チェック
-            if (encrypt_value == null) {
-                System.out.println("-d argument err ");
-                usage();
-                return;
-            }
-
-            String bigIPaddr = BigIpDecrypt.decrypt(encrypt_value);
-            System.out.println("IP addres: " + bigIPaddr);
-            System.out.println("PrivateIP: " + IpUtil.isPrivateIP(bigIPaddr));
-
-        } catch (Exception ex) {
-            String errmsg = String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
-            System.out.println(errmsg);
-            Logger.getLogger(BigIpDecrypt.class.getName()).log(Level.SEVERE, null, ex);
-            usage();
-        }
-    }
-
-    private static void usage() {
-        final String projname = BUNDLE.getString("projname");
-        System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", projname));
-        System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", projname));
-    }
-
     /**
      * https://www.owasp.org/index.php/SCG_D_BIGIP
      * https://support.f5.com/csp/article/K6917
@@ -108,16 +51,7 @@ public class BigIpDecrypt {
     private BigIpDecrypt() {
     }
 
-    public static BigIpDecrypt parseDecrypt(boolean messageIsRequest, byte[] messageByte) {
-        BigIpDecrypt decryptList[] = parseDecrypts(messageIsRequest, messageByte);
-        if (decryptList.length > 0) {
-            return decryptList[0];
-        } else {
-            return null;
-        }
-    }
-
-    public static BigIpDecrypt[] parseDecrypts(boolean messageIsRequest, byte[] messageByte) {
+    public static List<BigIpDecrypt> parseMessage(boolean messageIsRequest, byte[] messageByte) {
         List<BigIpDecrypt> decryptList = new ArrayList<>();
         String message = Util.getRawStr(messageByte);
         String cookieAll = null;
@@ -140,7 +74,7 @@ public class BigIpDecrypt {
                 decryptList.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         }
-        return decryptList.toArray(new BigIpDecrypt[0]);
+        return decryptList;
     }
 
     protected static List<BigIpDecrypt> parseDecryptList(boolean messageIsRequest, String cookieAll, int cookieOffset) {
