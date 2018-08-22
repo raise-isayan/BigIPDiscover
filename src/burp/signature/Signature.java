@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface Signature<M> {
 
-    public IScanIssue makeIssue(final IHttpRequestResponse messageInfo, final List<M> list);
+    public IScanIssue makeScanIssue(final IHttpRequestResponse messageInfo, final List<M> list);
         
     public IScannerCheck passiveScanCheck();
     

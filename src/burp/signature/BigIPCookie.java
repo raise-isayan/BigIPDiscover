@@ -81,7 +81,7 @@ public class BigIPCookie implements Signature<BigIpDecrypt> {
 
                 if (markIPList.size() > 0) {
                     List<IScanIssue> issues = new ArrayList<>();
-                    issues.add(makeIssue(messageInfoMark, markIPList));
+                    issues.add(makeScanIssue(messageInfoMark, markIPList));
                     return issues;
                 } else {
                     return null;
@@ -106,7 +106,7 @@ public class BigIPCookie implements Signature<BigIpDecrypt> {
     }
     
     @Override
-    public IScanIssue makeIssue(IHttpRequestResponse messageInfo, List<BigIpDecrypt> markIPList) {
+    public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<BigIpDecrypt> markIPList) {
 
         return new IScanIssue() {
             @Override
@@ -117,7 +117,7 @@ public class BigIPCookie implements Signature<BigIpDecrypt> {
 
             @Override
             public String getIssueName() {
-                return "Persistence Cookie Information Leakage (BigIP)";
+                return "Insecure BigIP Cookie";
             }
 
             @Override
