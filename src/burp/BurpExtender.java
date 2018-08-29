@@ -6,7 +6,6 @@
 package burp;
 
 import burp.signature.BigIPCookie;
-import extend.util.BurpWrap;
 import extend.util.ConvertUtil;
 import extend.util.IpUtil;
 import extend.view.base.MatchItem;

@@ -7,7 +7,6 @@ package burp.signature;
 
 import burp.BigIpDecrypt;
 import burp.BurpExtender;
-import static burp.BurpExtenderImpl.getCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IHttpRequestResponseWithMarkers;
 import burp.IHttpService;
@@ -26,7 +25,7 @@ import java.util.List;
  *
  * @author isayan
  */
-public class BigIPCookie implements Signature<BigIpDecrypt> {
+public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
     private final OptionProperty option;
     
@@ -74,9 +73,9 @@ public class BigIPCookie implements Signature<BigIpDecrypt> {
                 }
                 IHttpRequestResponseWithMarkers messageInfoMark = null;
                 if (messageIsRequest) {
-                    messageInfoMark = getCallbacks().applyMarkers(baseRequestResponse, requestResponseMarkers, null);
+                    messageInfoMark = BurpExtender.getCallbacks().applyMarkers(baseRequestResponse, requestResponseMarkers, null);
                 } else {
-                    messageInfoMark = getCallbacks().applyMarkers(baseRequestResponse, null, requestResponseMarkers);
+                    messageInfoMark = BurpExtender.getCallbacks().applyMarkers(baseRequestResponse, null, requestResponseMarkers);
                 }
 
                 if (markIPList.size() > 0) {
@@ -111,7 +110,7 @@ public class BigIPCookie implements Signature<BigIpDecrypt> {
         return new IScanIssue() {
             @Override
             public URL getUrl() {
-                IRequestInfo reqInfo = getCallbacks().getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
+                IRequestInfo reqInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
                 return reqInfo.getUrl();
             }
 

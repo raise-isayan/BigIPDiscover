@@ -10,10 +10,7 @@ import extend.util.Util;
 import java.nio.ByteOrder;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +49,7 @@ public class BigIpDecrypt {
     }
 
     public static List<BigIpDecrypt> parseMessage(boolean messageIsRequest, byte[] messageByte) {
-        List<BigIpDecrypt> decryptList = new ArrayList<>();
+        List<BigIpDecrypt> list = new ArrayList<>();
         String message = Util.getRawStr(messageByte);
         String cookieAll = null;
         int cookieOffset = 0;
@@ -63,7 +60,7 @@ public class BigIpDecrypt {
             while (m.find()) {
                 cookieOffset = m.start(1);
                 cookieAll = m.group(1);
-                decryptList.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
+                list.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         } else {
             // Set-Cookieの取得
@@ -71,14 +68,14 @@ public class BigIpDecrypt {
             while (m.find()) {
                 cookieOffset = m.start(1);
                 cookieAll = m.group(1);
-                decryptList.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
+                list.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         }
-        return decryptList;
+        return list;
     }
 
     protected static List<BigIpDecrypt> parseDecryptList(boolean messageIsRequest, String cookieAll, int cookieOffset) {
-        List<BigIpDecrypt> decryptList = new ArrayList<>();
+        List<BigIpDecrypt> list = new ArrayList<>();
         if (cookieAll != null) {
             Matcher m = BIGIP_COOKIE.matcher(cookieAll);
             while (m.find()) {
@@ -94,11 +91,11 @@ public class BigIpDecrypt {
                     bigIP.encryptCookie = cookieValue;
                     bigIP.startPos = cookieOffset + m.start();
                     bigIP.endPos = cookieOffset + m.end();
-                    decryptList.add(bigIP);
+                    list.add(bigIP);
                 }
             }
         }
-        return decryptList;
+        return list;
     }
 
     /*
