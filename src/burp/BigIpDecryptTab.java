@@ -281,6 +281,7 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
         });        
         // FreeVersion only
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
             public void componentShown(ComponentEvent e) {
                 SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().isProfessional());
             }

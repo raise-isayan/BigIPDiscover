@@ -28,7 +28,7 @@ import java.util.List;
 public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
     private final OptionProperty option;
-    
+
     public BigIPCookie(final OptionProperty option) {
         this.option = option;
     }
@@ -39,7 +39,7 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
             @Override
             public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
                 List<IScanIssue> issue = null;
-                List<BigIpDecrypt> bigIpList = null;
+                List<BigIpDecrypt> bigIpList = new ArrayList<>();
                 // Response判定
                 if (issue == null && option.getScan().getScanResponse() && baseRequestResponse.getResponse() != null) {
                     // ヘッダのみ抽出（逆に遅くなってるかも？）
@@ -103,7 +103,7 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
         };
     }
-    
+
     @Override
     public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<BigIpDecrypt> markIPList) {
 
@@ -208,5 +208,5 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
         };
 
     }
-    
+
 }

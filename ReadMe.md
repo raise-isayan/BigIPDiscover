@@ -1,12 +1,12 @@
-Burp suite 拡張 BigIPDiscover
+Burp suite Extension BigIPDiscover
 =============
-このツールは、PortSwigger社の製品であるBurp Suiteの拡張になります。
 
-## 概要
-F5ネットワークスのBIG-IPが設定するCookieにはプライベートIPが含まれる場合があり、そのIPを検出するための
-拡張になります。
+This tool is an extension of PortSwigger's product Burp Suite.
 
-脆弱性の詳細については以下を参照してください。
+## Overview
+The cookie set by BIG-IP of F5 Networks may include a private IP, which is an extension to detect that IP.
+
+For details of vulnerability, see below.
 
 * https://www.owasp.org/index.php/SCG_D_BIGIP
 * https://support.f5.com/csp/article/K6917
@@ -19,71 +19,72 @@ BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80
 BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80
 ````
 
-## 利用方法
-Burp suite の Extenderは以下の手順で読み込めます。
+## How to Use
+The Burp suite Extender can be read by the following procedure.
 
-1. [Extender]タブの[add]をクリック
-2. [Select file ...]をクリックし、BigIPDiscover.jar を選択する。
-3. ｢Next｣をクリックし、エラーがでてないことを確認後、「Close」にてダイヤログを閉じる。
+1. Click [add] on the [Extender] tab
+2. Click [Select file ...] and select BigIPDiscover.jar.
+3. Click [Next], confirm that no error is occurring, and close the dialog with [Close].
 
-## 設定 
-拡張を読み込むと「BigIP」タブが表示されます。
-ここには「Decrypt」、「Options」のタブがありここから設定等を行うことが可能です。
+## Configuration
+When you read the extension, the [BigIP] tab is displayed.
+There are tabs of [Decrypt] and [Options] here and it is possible to set up etc from here.
 
-### Decrypt タブ
-EncryptされたBigIPの値をDecryptします。
-上側の入力欄にDecryptを指定後、[Decrypt]ボタンをクリックすることで、Decryptされた値が
-下側の入力欄に表示されます。
+### Decrypt Tab
+Decrypt the value of Encrypted BigIP.
+After specifying Decrypt in the upper input field, clicking the [Decrypt] button, the decrypted value becomes
+It is displayed in the lower input field.
 
 ![Decrypt Tab](/image/Decrypt.png)
 
-### Options タブ
-BigIPのスキャンオプションの設定を行います。
+### Options Tab
+Configure scan options for BigIP.
 
 ![Options Tab](/image/Options.png)
 
 #### Scan Header
-スキャン対象を指定します。
+Specify the scan target.
  + Response Set-Cookie
-     + 設定をはずすことはできません
+     + You can not uncheck the setting.
  + Request Cookie
-     + Request Cookie もスキャン対象とします。
+     + Request cookie is also scanned.
 
 #### Detection Option
-検出する対象の設定
+Detection target setting
  + Privat IP Only
-     + Private IP のみを検出します。
+     + It detects only Private IP.
 
 #### Free version scan option
-Freeバージョンのみで有効な設定です。
+This setting is valid only for Free version.
   + item highlight
-      + 検出した場合にHistoryにつける色を指定します。
+      + Specify the color to be added to History when it is detected.
   + comment
-      + 検出した場合にコメントを書き換えます。
+      + Rewrite the comment when it detects it.
 
-## コマンドラインオプション
-コマンドラインからCookieの値をデコードすることが可能です。
+## Command line options
+It is possible to decode cookie values from the command line.
 
 ```
 java -jar BigIpDiscover.jar -d <encrypt>
 ```
 
-<encrypt> にデコードしたいCookieを指定します。
-例を示します。
+Specify the cookie you want to decode to <encrypt>.
 
-例)
+For example.
+
+example)
 ```
 java -jar BigIpDiscover.jar -d BIGipServer16122=1677787402.36895.0000
 IP addres: 10.1.1.100:8080
 PrivateIP: true
 ```
 
-## 必須ライブラリ
-ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
+## Required libraries
+Build requires a separate library of [BurpExtLib] (https://github.com/raise-isayan/BurpExtLib).
 * BurpExtlib v1.7.32
 
-以下のバージョンで動作確認しています。
+Operation is confirmed with the following versions.
 * Burp suite v1.7.35
 
-## 注意事項
-このツールは、私個人が勝手に開発したもので、PortSwigger社は一切関係ありません。本ツールを使用したことによる不具合等についてPortSwiggerに問い合わせないようお願いします。
+## important
+This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.

@@ -8,7 +8,6 @@ package burp.signature;
 import burp.IHttpRequestResponse;
 import burp.IScanIssue;
 import burp.IScannerCheck;
-import java.util.List;
 
 /**
  *

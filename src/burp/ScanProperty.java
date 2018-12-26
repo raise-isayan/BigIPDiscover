@@ -7,11 +7,13 @@ package burp;
 
 import extend.view.base.MatchItem;
 import java.util.EnumSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author isayan
  */
+@XmlRootElement(name="scan")
 public class ScanProperty {
 
     private boolean scanRequest = true;

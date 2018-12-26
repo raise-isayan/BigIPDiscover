@@ -19,7 +19,7 @@ public final class Config {
 
     private Config() {
     }
-
+    
     /**
      * Propertyファイルの読み込み
      *
