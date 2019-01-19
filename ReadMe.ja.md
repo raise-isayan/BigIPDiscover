@@ -1,6 +1,7 @@
 Burp suite 拡張 BigIPDiscover
 =============
 このツールは、PortSwigger社の製品であるBurp Suiteの拡張になります。
+
 Burp ProfessionalのScannerに対応しています。
 また、Burp Communityの場合でもProxyのHistory機能を利用して検出できます。
 

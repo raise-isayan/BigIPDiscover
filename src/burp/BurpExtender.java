@@ -7,6 +7,7 @@ import extend.view.base.MatchItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -58,7 +59,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     }
 
     private IScannerCheck professionalPassiveScanCheck() {
-        BigIPCookie bigip = new BigIPCookie(this.getProperty());
+        final BigIPCookie bigip = new BigIPCookie(this.getProperty());
         return bigip.passiveScanCheck();
     }
 
@@ -66,54 +67,48 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
         if ((toolFlag == IBurpExtenderCallbacks.TOOL_PROXY) && !messageIsRequest) {
-            freePassiveScan(messageInfo);
+            try {
+                freePassiveScan(messageInfo);
+            } catch (Exception ex) {
+                Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     public void freePassiveScan(IHttpRequestResponse messageInfo) {
-        try {
-            List<BigIpDecrypt> bigIpList = null;
-            // Response判定
-            if (bigIpList == null && this.getProperty().getScan().getScanResponse() && messageInfo.getResponse() != null) {
-                // ヘッダのみ抽出（逆に遅くなってるかも？）
-                IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(messageInfo.getResponse());
-                byte resHeader[] = Arrays.copyOfRange(messageInfo.getResponse(), 0, resInfo.getBodyOffset());
-                bigIpList = BigIpDecrypt.parseMessage(false, resHeader);
+        List<BigIpDecrypt> bigIpList = new ArrayList<>();
+        final BigIPCookie bigip = new BigIPCookie(this.getProperty());
+        // Response判定
+        if (this.getProperty().getScan().getScanResponse() && messageInfo.getResponse() != null) {
+            bigIpList.addAll(bigip.getBigIPList(false, messageInfo.getResponse()));
+        }
+        // Request判定
+        if (this.getProperty().getScan().getScanRequest() && messageInfo.getRequest() != null) {
+            bigIpList.addAll(bigip.getBigIPList(true, messageInfo.getRequest()));                
+        }
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < bigIpList.size(); i++) {
+            BigIpDecrypt item = bigIpList.get(i);
+            //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
+            // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+            if (this.getProperty().getScan().isDetectionPrivateIP() && !item.isPrivateIP()) {
+                continue;
             }
-            // Request判定
-            if (bigIpList == null && this.getProperty().getScan().getScanRequest() && messageInfo.getRequest() != null) {
-                // ヘッダのみ抽出（逆に遅くなってるかも？）
-                IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getRequest());
-                byte reqHeader[] = Arrays.copyOfRange(messageInfo.getRequest(), 0, reqInfo.getBodyOffset());
-                bigIpList = BigIpDecrypt.parseMessage(true, reqHeader);
+            if (buff.length() == 0) {
+                buff.append("BigIP:");
+            } else {
+                buff.append(", ");
             }
-            StringBuilder buff = new StringBuilder();
-            for (int i = 0; i < bigIpList.size(); i++) {
-                BigIpDecrypt item = bigIpList.get(i);
-                //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
-                // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-                if (this.getProperty().getScan().isDetectionPrivateIP() && !item.isPrivateIP()) {
-                    continue;
-                }
-                if (buff.length() == 0) {
-                    buff.append("BigIP:");
-                } else {
-                    buff.append(", ");
-                }
-                buff.append(item.getIPAddr());
+            buff.append(item.getIPAddr());
+        }
+        if (buff.length() > 0) {
+            ScanProperty scan = this.getProperty().getScan();
+            if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
+                messageInfo.setHighlight(scan.getHighlightColor().toString());
             }
-            if (buff.length() > 0) {
-                ScanProperty scan = this.getProperty().getScan();
-                if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
-                    messageInfo.setHighlight(scan.getHighlightColor().toString());
-                }
-                if (this.getProperty().getScan().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
-                    messageInfo.setComment(buff.toString());
-                }
+            if (this.getProperty().getScan().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
+                messageInfo.setComment(buff.toString());
             }
-
-        } catch (Exception ex) {
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

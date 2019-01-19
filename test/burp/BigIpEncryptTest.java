@@ -56,6 +56,17 @@ public class BigIpEncryptTest {
             + "Connection: close\r\n"
             + "Content-Type: text/html; charset=UTF-8\r\n\r\n";
 
+        private final static String RES_TEST11_FMT = "HTTP/1.1 200 OK\r\n"
+            + "Date: Sat, 19 Jan 2019 02:49:15 GMT\r\n"
+            + "Server: Apache/2.4.10 (Debian)\r\n"
+            + "Set-Cookie: TestCookie=test\r\n"
+            + "Set-Cookie: BIGipServer15722=rd5o00000000000000000000ffffc0000201o80\r\n"
+            + "Set-Cookie: m9q9XULEMwKPeMim=43029390064855036802\r\n"
+            + "Vary: Accept-Encoding\r\n"
+            + "Content-Length: 116\r\n"
+            + "Connection: close\r\n"
+            + "Content-Type: text/html; charset=UTF-8\r\n\r\n";
+    
     /**
      * Test of decrypt method, of class BigIpDecrypt.
      */
@@ -213,9 +224,22 @@ public class BigIpEncryptTest {
         System.out.println("BigIpEncrypt Res10");
         List<BigIpDecrypt> bigIP1 = BigIpDecrypt.parseMessage(false, Util.getRawByte(RES_TEST10_FMT));
         assertEquals("10.1.1.100:8080", bigIP1.get(0).getIPAddr());
+        assertEquals(true, bigIP1.get(0).isPrivateIP());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
     }
 
+    /**
+     * Test of decrypt method, of class BigIpDecrypt.
+     */
+    @Test
+    public void testBigIpEncrypt_Res11() {
+        System.out.println("BigIpEncrypt Res11");
+        List<BigIpDecrypt> bigIP1 = BigIpDecrypt.parseMessage(false, Util.getRawByte(RES_TEST11_FMT));
+        assertEquals("192.0.2.1:80", bigIP1.get(0).getIPAddr());
+        assertEquals(false, bigIP1.get(0).isPrivateIP());
+        assertEquals(true, bigIP1.get(0).startsBIGipServer());
+    }
+    
     /**
      * Test of decrypt method, of class BigIpDecrypt.
      */

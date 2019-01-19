@@ -2,6 +2,7 @@ Burp suite Extension BigIPDiscover
 =============
 
 This tool is an extension of PortSwigger's product Burp Suite.
+
 It corresponds to Scanner of Burp Professional Edition.
 Also, even in the case of the Burp Community Edition, it can be detected by using the History function of Proxy.
 

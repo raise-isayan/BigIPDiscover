@@ -35,26 +35,18 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
             @Override
             public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
                 List<IScanIssue> issue = null;
-                List<BigIpDecrypt> bigIpList = new ArrayList<>();
                 // Response判定
-                if (issue == null && option.getScan().getScanResponse() && baseRequestResponse.getResponse() != null) {
-                    // ヘッダのみ抽出（逆に遅くなってるかも？）
-                    IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(baseRequestResponse.getResponse());
-                    byte resHeader[] = Arrays.copyOfRange(baseRequestResponse.getResponse(), 0, resInfo.getBodyOffset());
-                    bigIpList = BigIpDecrypt.parseMessage(false, resHeader);
-                    issue = makeIssueList(false, baseRequestResponse, bigIpList);
+                if (option.getScan().getScanResponse() && baseRequestResponse.getResponse() != null) {
+                    issue = makeIssueList(false, baseRequestResponse, getBigIPList(false, baseRequestResponse.getResponse()));                    
                 }
                 // Request判定
-                if (issue == null && option.getScan().getScanRequest() && baseRequestResponse.getRequest() != null) {
-                    // ヘッダのみ抽出（逆に遅くなってるかも？）
-                    IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(baseRequestResponse.getRequest());
-                    byte reqHeader[] = Arrays.copyOfRange(baseRequestResponse.getRequest(), 0, reqInfo.getBodyOffset());
-                    bigIpList = BigIpDecrypt.parseMessage(true, reqHeader);
-                    issue = makeIssueList(true, baseRequestResponse, bigIpList);
+                if (option.getScan().getScanRequest() && baseRequestResponse.getRequest() != null) {
+                    issue = makeIssueList(true, baseRequestResponse, getBigIPList(true, baseRequestResponse.getRequest()));                    
                 }
+
                 return issue;
             }
-
+            
             public List<IScanIssue> makeIssueList(boolean messageIsRequest, IHttpRequestResponse baseRequestResponse, List<BigIpDecrypt> bigIpList) {
                 List<BigIpDecrypt> markIPList = new ArrayList<>();
                 List<int[]> requestResponseMarkers = new ArrayList<>();
@@ -206,4 +198,23 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
     }
 
+    public List<BigIpDecrypt> getBigIPList(boolean messageIsRequest, byte [] message) {
+        List<BigIpDecrypt> bigIpList = new ArrayList<>();
+        // Response判定
+        if (!messageIsRequest) {
+            // ヘッダのみ抽出（逆に遅くなってるかも？）
+            IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(message);
+            byte resHeader[] = Arrays.copyOfRange(message, 0, resInfo.getBodyOffset());
+            bigIpList.addAll(BigIpDecrypt.parseMessage(false, resHeader));
+        }
+        // Request判定
+        if (messageIsRequest && message != null) {
+            // ヘッダのみ抽出（逆に遅くなってるかも？）
+            IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(message);
+            byte reqHeader[] = Arrays.copyOfRange(message, 0, reqInfo.getBodyOffset());
+            bigIpList.addAll(BigIpDecrypt.parseMessage(true, reqHeader));
+        }
+        return bigIpList;                      
+    }
+    
 }
