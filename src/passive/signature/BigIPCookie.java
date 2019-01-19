@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package burp.signature;
+package passive.signature;
 
 import burp.BigIpDecrypt;
 import burp.BurpExtender;
@@ -15,7 +10,8 @@ import burp.IResponseInfo;
 import burp.IScanIssue;
 import burp.IScannerCheck;
 import burp.IScannerInsertionPoint;
-import burp.OptionProperty;
+import burp.IOptionProperty;
+import extend.view.base.MatchItem;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,9 +23,9 @@ import java.util.List;
  */
 public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
-    private final OptionProperty option;
+    private final IOptionProperty option;
 
-    public BigIPCookie(final OptionProperty option) {
+    public BigIPCookie(final IOptionProperty option) {
         this.option = option;
     }
 
@@ -130,19 +126,20 @@ public class BigIPCookie implements Signature<List<BigIpDecrypt>> {
 
             @Override
             public String getSeverity() {
-                String severity = "Information";
+                MatchItem.Severity severity = MatchItem.Severity.INFORMATION;
                 for (BigIpDecrypt markIP : markIPList) {
                     if (markIP.isPrivateIP()) {
-                        severity = "Low";
+                        severity = MatchItem.Severity.LOW;
                         break; // ひとつでもPrivateIPがあればリスクをLowに
                     }
                 }
-                return severity;
+                return severity.toString();
             }
 
             @Override
             public String getConfidence() {
-                return "Certain";
+                MatchItem.Confidence confidence = MatchItem.Confidence.CERTAIN;
+                return confidence.toString();
             }
 
             @Override

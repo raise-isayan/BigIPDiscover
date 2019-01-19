@@ -1,19 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package burp;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author isayan
+ * @author raise.isayan
  */
-public interface OptionProperty {
-    public final static String SCAN_PROPERTY = "ScanPropery";
+@XmlRootElement(name = "bigip")
+public class OptionProperty implements IOptionProperty {
 
-    public ScanProperty getScan();
+    /* IOptionProperty implements */
+    private final ScanProperty scanProperty = new ScanProperty();
 
-    public void setScan(ScanProperty scan);
+    @Override
+    public ScanProperty getScan() {
+        return this.scanProperty;
+    }
+
+    @Override
+    public void setScan(ScanProperty scan) {
+        this.scanProperty.setProperty(scan);
+    }
+
+    public void setProperty(OptionProperty property) {
+        this.setScan(property.getScan());
+    }
 
 }

@@ -2,6 +2,8 @@ Burp suite Extension BigIPDiscover
 =============
 
 This tool is an extension of PortSwigger's product Burp Suite.
+It corresponds to Scanner of Burp Professional Edition.
+Also, even in the case of the Burp Community Edition, it can be detected by using the History function of Proxy.
 
 ## Overview
 The cookie set by BIG-IP of F5 Networks may include a private IP, which is an extension to detect that IP.
@@ -81,10 +83,10 @@ PrivateIP: true
 
 ## Required libraries
 Build requires a separate library of [BurpExtLib] (https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v1.7.32
+* BurpExtlib v1.7.36
 
 Operation is confirmed with the following versions.
-* Burp suite v1.7.35
+* Burp suite v1.7.36
 
 ## important
 This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.

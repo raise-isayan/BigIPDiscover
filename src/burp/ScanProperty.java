@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package burp;
 
 import extend.view.base.MatchItem;
 import java.util.EnumSet;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author isayan
  */
-@XmlRootElement(name="scan")
 public class ScanProperty {
 
     private boolean scanRequest = true;
@@ -37,7 +30,7 @@ public class ScanProperty {
     }
 
     private boolean detectionPrivateIP = true;
-    
+
     /**
      * @return the detectionPrivateIP
      */
@@ -51,7 +44,7 @@ public class ScanProperty {
     public void setDetectionPrivateIP(boolean detectionPrivateIP) {
         this.detectionPrivateIP = detectionPrivateIP;
     }
-    
+
     private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.allOf(MatchItem.NotifyType.class);
 
     /**

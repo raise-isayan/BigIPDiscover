@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package burp;
 
-import burp.signature.BigIPCookie;
+import passive.signature.BigIPCookie;
 import extend.util.ConvertUtil;
 import extend.util.IpUtil;
 import extend.view.base.MatchItem;
@@ -21,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author isayan
  */
-public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener, OptionProperty {
+public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener {
 
     private final BigIpDecryptTab tabbetOption = new BigIpDecryptTab();
     private boolean burpProfessional = false;
@@ -49,7 +44,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.tabbetOption.setScanProperty(this.getScan());
+        this.tabbetOption.setScanProperty(this.getProperty().getScan());
         this.tabbetOption.addPropertyChangeListener(newPropertyChangeListener());
 
         // プロフェッショナル版の場合
@@ -63,11 +58,10 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     }
 
     private IScannerCheck professionalPassiveScanCheck() {
-       BigIPCookie bigip = new BigIPCookie(this);
-       return bigip.passiveScanCheck();
+        BigIPCookie bigip = new BigIPCookie(this.getProperty());
+        return bigip.passiveScanCheck();
     }
-    
-    
+
     // フリー版の実装
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
@@ -80,14 +74,14 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         try {
             List<BigIpDecrypt> bigIpList = null;
             // Response判定
-            if (bigIpList == null && getScan().getScanResponse() && messageInfo.getResponse() != null) {
+            if (bigIpList == null && this.getProperty().getScan().getScanResponse() && messageInfo.getResponse() != null) {
                 // ヘッダのみ抽出（逆に遅くなってるかも？）
                 IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(messageInfo.getResponse());
                 byte resHeader[] = Arrays.copyOfRange(messageInfo.getResponse(), 0, resInfo.getBodyOffset());
                 bigIpList = BigIpDecrypt.parseMessage(false, resHeader);
             }
             // Request判定
-            if (bigIpList == null && getScan().getScanRequest() && messageInfo.getRequest() != null) {
+            if (bigIpList == null && this.getProperty().getScan().getScanRequest() && messageInfo.getRequest() != null) {
                 // ヘッダのみ抽出（逆に遅くなってるかも？）
                 IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getRequest());
                 byte reqHeader[] = Arrays.copyOfRange(messageInfo.getRequest(), 0, reqInfo.getBodyOffset());
@@ -98,7 +92,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                 BigIpDecrypt item = bigIpList.get(i);
                 //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
                 // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-                if (getScan().isDetectionPrivateIP() && !item.isPrivateIP()) {
+                if (this.getProperty().getScan().isDetectionPrivateIP() && !item.isPrivateIP()) {
                     continue;
                 }
                 if (buff.length() == 0) {
@@ -109,11 +103,11 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                 buff.append(item.getIPAddr());
             }
             if (buff.length() > 0) {
-                ScanProperty scan = this.getScan();
+                ScanProperty scan = this.getProperty().getScan();
                 if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
                     messageInfo.setHighlight(scan.getHighlightColor().toString());
                 }
-                if (this.getScan().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
+                if (this.getProperty().getScan().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
                     messageInfo.setComment(buff.toString());
                 }
             }
@@ -128,8 +122,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (OptionProperty.SCAN_PROPERTY.equals(evt.getPropertyName())) {
-                    setScan(tabbetOption.getScanProperty());
+                if (IOptionProperty.SCAN_PROPERTY.equals(evt.getPropertyName())) {
+                    getProperty().setScan(tabbetOption.getScanProperty());
                     //System.out.println(getScan().getNotifyTypes() + ":" + getScan().getHighlightColor());
                     applyOptionProperty();
                 }
@@ -150,35 +144,22 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     }
 
-    private OptionProperty getProperty() {
-        return this;
-    }
+    private final IOptionProperty property = new OptionProperty();
 
-    /* OptionProperty implements */
-    private final ScanProperty scanProperty = new ScanProperty();
-
-    @Override
-    public ScanProperty getScan() {
-        return this.scanProperty;
-    }
-
-    @Override
-    public void setScan(ScanProperty scan) {
-        this.scanProperty.setProperty(scan);
+    public IOptionProperty getProperty() {
+        return this.property;
     }
 
     private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
 
     private static String getVersion() {
-       return BUNDLE.getString("version");
+        return BUNDLE.getString("version");
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//      burp.StartBurp.main(args);
-//      return ;
         try {
             String encrypt_value = null;
             for (int i = 0; i < args.length; i += 2) {
@@ -226,5 +207,5 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         System.out.println(String.format("Usage: java -jar %s.jar -d <encrypt>", projname));
         System.out.println(String.format("   ex: java -jar %s.jar -d BIGipServer16122=1677787402.36895.0000", projname));
     }
-    
+
 }
