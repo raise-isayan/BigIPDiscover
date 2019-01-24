@@ -1,6 +1,8 @@
 Burp suite Extension BigIPDiscover
 =============
 
+Language/[Japanese](https://github.com/raise-isayan/BigIPDiscover/blob/master/Readme-ja.md)
+
 This tool is an extension of PortSwigger's product Burp Suite.
 
 It corresponds to Scanner of Burp Professional Edition.
@@ -74,8 +76,6 @@ java -jar BigIpDiscover.jar -d <encrypt>
 Specify the cookie you want to decode to <encrypt>.
 
 For example.
-
-example)
 ```
 java -jar BigIpDiscover.jar -d BIGipServer16122=1677787402.36895.0000
 IP addres: 10.1.1.100:8080
@@ -83,7 +83,7 @@ PrivateIP: true
 ```
 
 ## Required libraries
-Build requires a separate library of [BurpExtLib] (https://github.com/raise-isayan/BurpExtLib).
+Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
 * BurpExtlib v1.7.36
 
 Operation is confirmed with the following versions.

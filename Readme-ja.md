@@ -1,6 +1,10 @@
 Burp suite 拡張 BigIPDiscover
 =============
+
+Language/[English](https://github.com/raise-isayan/BigIPDiscover/blob/master/Readme.md)
+
 このツールは、PortSwigger社の製品であるBurp Suiteの拡張になります。
+
 
 Burp ProfessionalのScannerに対応しています。
 また、Burp Communityの場合でもProxyのHistory機能を利用して検出できます。
@@ -14,7 +18,7 @@ F5ネットワークスのBIG-IPが設定するCookieにはプライベートIP�
 * https://www.owasp.org/index.php/SCG_D_BIGIP
 * https://support.f5.com/csp/article/K6917
 
-Examples
+Examples.
 ````
 BIGipServer<pool_name>=1677787402.36895.0000
 BIGipServer<pool_name>=vi20010112000000000000000000000030.20480
@@ -83,10 +87,10 @@ PrivateIP: true
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
-* BurpExtlib v1.7.35
+* BurpExtlib v1.7.36
 
 以下のバージョンで動作確認しています。
-* Burp suite v1.7.35
+* Burp suite v1.7.36
 
 ## 注意事項
 このツールは、私個人が勝手に開発したもので、PortSwigger社は一切関係ありません。本ツールを使用したことによる不具合等についてPortSwiggerに問い合わせないようお願いします。
