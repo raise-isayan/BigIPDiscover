@@ -1,5 +1,8 @@
-package burp;
+package passive;
 
+import passive.OptionProperty;
+import passive.signature.BigIPCookieProperty;
+import passive.IOptionProperty;
 import extend.util.IniProp;
 import extend.util.Util;
 import extend.view.base.MatchItem;
@@ -72,7 +75,7 @@ public final class Config {
     }
 
     protected static void loadFromXml(IniProp prop, IOptionProperty option) throws IOException {
-        ScanProperty scan = option.getScan();
+        BigIPCookieProperty scan = option.getBigIPCookieProperty();
         scan.setScanRequest(prop.readEntryBool("scan", "request", true));
         scan.setScanResponse(prop.readEntryBool("scan", "response", true));
 
@@ -111,7 +114,7 @@ public final class Config {
     }
 
     protected static void saveToXML(IniProp prop, IOptionProperty option) throws IOException {
-        ScanProperty scan = option.getScan();
+        BigIPCookieProperty scan = option.getBigIPCookieProperty();
 
         // Scan
         prop.writeEntryBool("scan", "request", scan.getScanRequest());

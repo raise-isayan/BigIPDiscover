@@ -1,4 +1,4 @@
-package burp;
+package passive.signature;
 
 import extend.view.base.MatchItem;
 import java.util.EnumSet;
@@ -7,7 +7,7 @@ import java.util.EnumSet;
  *
  * @author isayan
  */
-public class ScanProperty {
+public class BigIPCookieProperty {
 
     private boolean scanRequest = true;
 
@@ -77,7 +77,7 @@ public class ScanProperty {
         this.highlightColor = highlightColor;
     }
 
-    public void setProperty(ScanProperty scan) {
+    public void setProperty(BigIPCookieProperty scan) {
         this.scanRequest = scan.scanRequest;
         this.scanResponse = scan.scanResponse;
         this.detectionPrivateIP = scan.detectionPrivateIP;

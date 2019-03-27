@@ -87,7 +87,7 @@ PrivateIP: true
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
-* BurpExtlib v1.7.36
+* BurpExtlib v1.7.39.0
 
 以下のバージョンで動作確認しています。
 * Burp suite v1.7.36

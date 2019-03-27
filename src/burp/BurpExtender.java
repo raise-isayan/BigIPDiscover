@@ -1,5 +1,10 @@
 package burp;
 
+import passive.Config;
+import passive.OptionProperty;
+import passive.signature.BigIPCookieProperty;
+import passive.IOptionProperty;
+import passive.signature.BigIPCookieTab;
 import passive.signature.BigIPCookie;
 import extend.util.ConvertUtil;
 import extend.util.IpUtil;
@@ -12,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import passive.signature.BigIPIssueItem;
 
 /**
  *
@@ -19,15 +25,11 @@ import java.util.logging.Logger;
  */
 public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener {
 
-    private final BigIpDecryptTab tabbetOption = new BigIpDecryptTab();
-    private boolean burpProfessional = false;
+    private final BigIPCookieTab tabbetOption = new BigIPCookieTab();
 
+    
     public static BurpExtender getInstance() {
         return BurpExtenderImpl.<BurpExtender>getInstance();
-    }
-
-    public boolean isProfessional() {
-        return this.burpProfessional;
     }
 
     @Override
@@ -35,7 +37,6 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         super.registerExtenderCallbacks(callbacks);
         callbacks.addSuiteTab(this.tabbetOption);
-        this.burpProfessional = getBurpVersion().isProfessional();
         try {
             String configXML = getCallbacks().loadExtensionSetting("configXML");
             if (configXML != null) {
@@ -45,11 +46,11 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.tabbetOption.setScanProperty(this.getProperty().getScan());
+        this.tabbetOption.setProperty(this.getProperty().getBigIPCookieProperty());
         this.tabbetOption.addPropertyChangeListener(newPropertyChangeListener());
 
         // プロフェッショナル版の場合
-        if (this.burpProfessional) {
+        if (getBurpVersion().isProfessional()) {
             callbacks.registerScannerCheck(professionalPassiveScanCheck());
         } // フリー版の場合
         else {
@@ -59,7 +60,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     }
 
     private IScannerCheck professionalPassiveScanCheck() {
-        final BigIPCookie bigip = new BigIPCookie(this.getProperty());
+        BigIPCookieProperty property = this.getProperty().getBigIPCookieProperty();
+        final BigIPCookie bigip = new BigIPCookie(property);
         return bigip.passiveScanCheck();
     }
 
@@ -76,22 +78,23 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     }
 
     public void freePassiveScan(IHttpRequestResponse messageInfo) {
-        List<BigIpDecrypt> bigIpList = new ArrayList<>();
-        final BigIPCookie bigip = new BigIPCookie(this.getProperty());
+        BigIPCookieProperty property = this.getProperty().getBigIPCookieProperty();
+        List<BigIPIssueItem> bigIpList = new ArrayList<>();
+        final BigIPCookie bigip = new BigIPCookie(property);
         // Response判定
-        if (this.getProperty().getScan().getScanResponse() && messageInfo.getResponse() != null) {
+        if (property.getScanResponse() && messageInfo.getResponse() != null) {
             bigIpList.addAll(bigip.getBigIPList(false, messageInfo.getResponse()));
         }
         // Request判定
-        if (this.getProperty().getScan().getScanRequest() && messageInfo.getRequest() != null) {
+        if (property.getScanRequest() && messageInfo.getRequest() != null) {
             bigIpList.addAll(bigip.getBigIPList(true, messageInfo.getRequest()));                
         }
         StringBuilder buff = new StringBuilder();
         for (int i = 0; i < bigIpList.size(); i++) {
-            BigIpDecrypt item = bigIpList.get(i);
+            BigIPIssueItem item = bigIpList.get(i);
             //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
             // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-            if (this.getProperty().getScan().isDetectionPrivateIP() && !item.isPrivateIP()) {
+            if (property.isDetectionPrivateIP() && !item.isPrivateIP()) {
                 continue;
             }
             if (buff.length() == 0) {
@@ -102,11 +105,10 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             buff.append(item.getIPAddr());
         }
         if (buff.length() > 0) {
-            ScanProperty scan = this.getProperty().getScan();
-            if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
-                messageInfo.setHighlight(scan.getHighlightColor().toString());
+            if (property.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
+                messageInfo.setHighlight(property.getHighlightColor().toString());
             }
-            if (this.getProperty().getScan().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
+            if (this.getProperty().getBigIPCookieProperty().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
                 messageInfo.setComment(buff.toString());
             }
         }
@@ -117,9 +119,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (IOptionProperty.SCAN_PROPERTY.equals(evt.getPropertyName())) {
-                    getProperty().setScan(tabbetOption.getScanProperty());
-                    //System.out.println(getScan().getNotifyTypes() + ":" + getScan().getHighlightColor());
+                if (IOptionProperty.BIGIP_COOKIE_PROPERTY.equals(evt.getPropertyName())) {
+                    getProperty().setBigIPCookieProperty(tabbetOption.getProperty());
+                    //System.out.println(getBigIPCookieProperty().getNotifyTypes() + ":" + getBigIPCookieProperty().getHighlightColor());
                     applyOptionProperty();
                 }
             }
@@ -139,10 +141,10 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     }
 
-    private final IOptionProperty property = new OptionProperty();
+    private IOptionProperty option = new OptionProperty();
 
     public IOptionProperty getProperty() {
-        return this.property;
+        return this.option;
     }
 
     private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
@@ -185,14 +187,14 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                 return;
             }
 
-            String bigIPaddr = BigIpDecrypt.decrypt(encrypt_value);
+            String bigIPaddr = BigIPCookie.decrypt(encrypt_value);
             System.out.println("IP addres: " + bigIPaddr);
             System.out.println("PrivateIP: " + IpUtil.isPrivateIP(bigIPaddr));
 
         } catch (Exception ex) {
             String errmsg = String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
             System.out.println(errmsg);
-            Logger.getLogger(BigIpDecrypt.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
             usage();
         }
     }

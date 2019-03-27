@@ -1,5 +1,8 @@
-package burp;
+package passive.signature;
 
+import burp.BurpExtender;
+import passive.IOptionProperty;
+import burp.ITab;
 import extend.util.SwingUtil;
 import extend.view.base.MatchItem;
 import java.awt.Component;
@@ -9,17 +12,18 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import passive.IOptionProperty;
 
 /**
  *
  * @author isayan
  */
-public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
+public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
 
     /**
      * Creates new form BigIpDecryptTab
      */
-    public BigIpDecryptTab() {
+    public BigIPCookieTab() {
         initComponents();
         customizeComponents();
     }
@@ -278,40 +282,40 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().isProfessional());
+                SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().getBurpVersion().isProfessional());
             }
         });
 
     }
 
     private void chkRequestStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkRequestStateChanged
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkRequestStateChanged
 
     private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
-        String value = BigIpDecrypt.decrypt(this.txtEncrypt.getText());
+        String value = BigIPCookie.decrypt(this.txtEncrypt.getText());
         this.txtDecrypt.setText(value);
     }//GEN-LAST:event_btnDecryptActionPerformed
 
     private void chk_CommentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chk_CommentStateChanged
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chk_CommentStateChanged
 
     private void cmbHighlightColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbHighlightColorActionPerformed
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_cmbHighlightColorActionPerformed
 
     private void chkItem_highlightStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkItem_highlightStateChanged
         this.cmbHighlightColor.setEnabled(this.chkItem_highlight.isSelected());
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkItem_highlightStateChanged
 
     private void chkPrivateIPStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkPrivateIPStateChanged
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkPrivateIPStateChanged
 
     private void chkResponseStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkResponseStateChanged
-        this.firePropertyChange(IOptionProperty.SCAN_PROPERTY, null, this.getScanProperty());
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkResponseStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -345,23 +349,23 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
         return this;
     }
 
-    public void setScanProperty(ScanProperty scan) {
-        this.chkRequest.setSelected(scan.getScanRequest());
-        this.chkResponse.setSelected(scan.getScanResponse());
+    public void setProperty(BigIPCookieProperty property) {
+        this.chkRequest.setSelected(property.getScanRequest());
+        this.chkResponse.setSelected(property.getScanResponse());
 
-        EnumSet<MatchItem.NotifyType> notifyTypes = scan.getNotifyTypes();
+        EnumSet<MatchItem.NotifyType> notifyTypes = property.getNotifyTypes();
         this.chkItem_highlight.setSelected(notifyTypes.contains(MatchItem.NotifyType.ITEM_HIGHLIGHT));
         this.chk_Comment.setSelected(notifyTypes.contains(MatchItem.NotifyType.COMMENT));
-        this.cmbHighlightColor.setSelectedItem(scan.getHighlightColor());
+        this.cmbHighlightColor.setSelectedItem(property.getHighlightColor());
 
-        this.chkPrivateIP.setSelected(scan.isDetectionPrivateIP());
+        this.chkPrivateIP.setSelected(property.isDetectionPrivateIP());
 
     }
 
-    public ScanProperty getScanProperty() {
-        ScanProperty scan = new ScanProperty();
-        scan.setScanRequest(this.chkRequest.isSelected());
-        scan.setScanResponse(this.chkResponse.isSelected());
+    public BigIPCookieProperty getProperty() {
+        BigIPCookieProperty property = new BigIPCookieProperty();
+        property.setScanRequest(this.chkRequest.isSelected());
+        property.setScanResponse(this.chkResponse.isSelected());
 
         EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.noneOf(MatchItem.NotifyType.class);
         if (this.chkItem_highlight.isSelected()) {
@@ -370,13 +374,13 @@ public class BigIpDecryptTab extends javax.swing.JPanel implements ITab {
         if (this.chk_Comment.isSelected()) {
             notifyTypes.add(MatchItem.NotifyType.COMMENT);
         }
-        scan.setNotifyTypes(notifyTypes);
-        if (scan.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
-            scan.setHighlightColor((MatchItem.HighlightColor) this.cmbHighlightColor.getSelectedItem());
+        property.setNotifyTypes(notifyTypes);
+        if (property.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
+            property.setHighlightColor((MatchItem.HighlightColor) this.cmbHighlightColor.getSelectedItem());
         }
-        scan.setDetectionPrivateIP(this.chkPrivateIP.isSelected());
+        property.setDetectionPrivateIP(this.chkPrivateIP.isSelected());
 
-        return scan;
+        return property;
     }
 
 }
