@@ -4,15 +4,16 @@ import burp.BurpExtender;
 import passive.IOptionProperty;
 import burp.ITab;
 import extend.util.SwingUtil;
+import extend.util.Util;
 import extend.view.base.MatchItem;
 import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.util.EnumSet;
+import java.util.MissingResourceException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import passive.IOptionProperty;
 
 /**
  *
@@ -38,12 +39,6 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
     private void initComponents() {
 
         tabbetOption = new javax.swing.JTabbedPane();
-        pnlDecrypt = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtDecrypt = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtEncrypt = new javax.swing.JTextArea();
-        btnDecrypt = new javax.swing.JButton();
         pnlOptions = new javax.swing.JPanel();
         pnlScanHeader = new javax.swing.JPanel();
         chkResponse = new javax.swing.JCheckBox();
@@ -55,8 +50,164 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         pnlDetectionOption = new javax.swing.JPanel();
         chkPrivateIP = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
+        pnlDecrypt = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtDecrypt = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtEncrypt = new javax.swing.JTextArea();
+        btnDecrypt = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
+
+        pnlScanHeader.setBorder(javax.swing.BorderFactory.createTitledBorder("Scan Header"));
+
+        chkResponse.setSelected(true);
+        chkResponse.setText("Response Set-Cookie");
+        chkResponse.setEnabled(false);
+        chkResponse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkResponseActionPerformed(evt);
+            }
+        });
+
+        chkRequest.setText("Request Cookie");
+        chkRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkRequestActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlScanHeaderLayout = new javax.swing.GroupLayout(pnlScanHeader);
+        pnlScanHeader.setLayout(pnlScanHeaderLayout);
+        pnlScanHeaderLayout.setHorizontalGroup(
+            pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlScanHeaderLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkResponse)
+                    .addComponent(chkRequest))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlScanHeaderLayout.setVerticalGroup(
+            pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlScanHeaderLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(chkResponse)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(chkRequest)
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+
+        pnlFreeScan.setBorder(javax.swing.BorderFactory.createTitledBorder("Community edition scan option"));
+
+        chk_Comment.setText("comment");
+        chk_Comment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chk_CommentActionPerformed(evt);
+            }
+        });
+
+        cmbHighlightColor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "orange", "yellow", "green", "cyan", "blue", "pink", "magenta", "gray" }));
+        cmbHighlightColor.setEnabled(false);
+        cmbHighlightColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbHighlightColorActionPerformed(evt);
+            }
+        });
+
+        chkItem_highlight.setText("item highlight");
+        chkItem_highlight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkItem_highlightActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlFreeScanLayout = new javax.swing.GroupLayout(pnlFreeScan);
+        pnlFreeScan.setLayout(pnlFreeScanLayout);
+        pnlFreeScanLayout.setHorizontalGroup(
+            pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFreeScanLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlFreeScanLayout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(chkItem_highlight)
+                    .addComponent(chk_Comment))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        pnlFreeScanLayout.setVerticalGroup(
+            pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFreeScanLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(chkItem_highlight)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chk_Comment)
+                .addContainerGap(130, Short.MAX_VALUE))
+        );
+
+        pnlDetectionOption.setBorder(javax.swing.BorderFactory.createTitledBorder("Detection Option"));
+
+        chkPrivateIP.setSelected(true);
+        chkPrivateIP.setText("Private IP Only");
+        chkPrivateIP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkPrivateIPActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("<html><ul><li>PrivateIP: Severity: Low</li><li>OtherIP: Severity: Info</li></ul> ");
+
+        javax.swing.GroupLayout pnlDetectionOptionLayout = new javax.swing.GroupLayout(pnlDetectionOption);
+        pnlDetectionOption.setLayout(pnlDetectionOptionLayout);
+        pnlDetectionOptionLayout.setHorizontalGroup(
+            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkPrivateIP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        pnlDetectionOptionLayout.setVerticalGroup(
+            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(chkPrivateIP)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout pnlOptionsLayout = new javax.swing.GroupLayout(pnlOptions);
+        pnlOptions.setLayout(pnlOptionsLayout);
+        pnlOptionsLayout.setHorizontalGroup(
+            pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlOptionsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlScanHeader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlDetectionOption, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlFreeScan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        pnlOptionsLayout.setVerticalGroup(
+            pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlOptionsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlFreeScan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlOptionsLayout.createSequentialGroup()
+                        .addComponent(pnlScanHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(105, Short.MAX_VALUE))
+        );
+
+        tabbetOption.addTab("Options", pnlOptions);
 
         txtDecrypt.setEditable(false);
         txtDecrypt.setColumns(20);
@@ -102,167 +253,28 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
 
         tabbetOption.addTab("Decrypt", pnlDecrypt);
 
-        pnlScanHeader.setBorder(javax.swing.BorderFactory.createTitledBorder("Scan Header"));
-
-        chkResponse.setSelected(true);
-        chkResponse.setText("Response Set-Cookie");
-        chkResponse.setEnabled(false);
-        chkResponse.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chkResponseStateChanged(evt);
-            }
-        });
-
-        chkRequest.setText("Request Cookie");
-        chkRequest.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chkRequestStateChanged(evt);
-            }
-        });
-
-        javax.swing.GroupLayout pnlScanHeaderLayout = new javax.swing.GroupLayout(pnlScanHeader);
-        pnlScanHeader.setLayout(pnlScanHeaderLayout);
-        pnlScanHeaderLayout.setHorizontalGroup(
-            pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlScanHeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkResponse)
-                    .addComponent(chkRequest))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pnlScanHeaderLayout.setVerticalGroup(
-            pnlScanHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlScanHeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chkResponse)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chkRequest)
-                .addContainerGap(28, Short.MAX_VALUE))
-        );
-
-        pnlFreeScan.setBorder(javax.swing.BorderFactory.createTitledBorder("Community edition scan option"));
-
-        chk_Comment.setText("comment");
-        chk_Comment.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chk_CommentStateChanged(evt);
-            }
-        });
-
-        cmbHighlightColor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "orange", "yellow", "green", "cyan", "blue", "pink", "magenta", "gray" }));
-        cmbHighlightColor.setEnabled(false);
-        cmbHighlightColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbHighlightColorActionPerformed(evt);
-            }
-        });
-
-        chkItem_highlight.setText("item highlight");
-        chkItem_highlight.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chkItem_highlightStateChanged(evt);
-            }
-        });
-
-        javax.swing.GroupLayout pnlFreeScanLayout = new javax.swing.GroupLayout(pnlFreeScan);
-        pnlFreeScan.setLayout(pnlFreeScanLayout);
-        pnlFreeScanLayout.setHorizontalGroup(
-            pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFreeScanLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkItem_highlight)
-                    .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chk_Comment))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pnlFreeScanLayout.setVerticalGroup(
-            pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFreeScanLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chkItem_highlight)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chk_Comment)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        pnlDetectionOption.setBorder(javax.swing.BorderFactory.createTitledBorder("Detection Option"));
-
-        chkPrivateIP.setSelected(true);
-        chkPrivateIP.setText("Private IP Only");
-        chkPrivateIP.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                chkPrivateIPStateChanged(evt);
-            }
-        });
-
-        jLabel1.setText("<html><ul><li>PrivateIP: Severity: Low</li><li>OtherIP: Severity: Info</li></ul> ");
-
-        javax.swing.GroupLayout pnlDetectionOptionLayout = new javax.swing.GroupLayout(pnlDetectionOption);
-        pnlDetectionOption.setLayout(pnlDetectionOptionLayout);
-        pnlDetectionOptionLayout.setHorizontalGroup(
-            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkPrivateIP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 59, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        pnlDetectionOptionLayout.setVerticalGroup(
-            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chkPrivateIP)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout pnlOptionsLayout = new javax.swing.GroupLayout(pnlOptions);
-        pnlOptions.setLayout(pnlOptionsLayout);
-        pnlOptionsLayout.setHorizontalGroup(
-            pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlOptionsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(pnlDetectionOption, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlScanHeader, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnlFreeScan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        pnlOptionsLayout.setVerticalGroup(
-            pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlOptionsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pnlFreeScan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlOptionsLayout.createSequentialGroup()
-                        .addComponent(pnlScanHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(139, Short.MAX_VALUE))
-        );
-
-        tabbetOption.addTab("Options", pnlOptions);
-
         add(tabbetOption, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
+    
+    private boolean isFreeSupport() {
+        boolean freeSupport = false;
+        try {
+            freeSupport = Util.parseBooleanDefault(BUNDLE.getString("freeSupport"), false);        
+        } catch (MissingResourceException ex) {        
+        }
+        return freeSupport;
+    }
+    
     private void customizeComponents() {
 
         this.cmbHighlightColor.setModel(
-                new DefaultComboBoxModel(
-                        new MatchItem.HighlightColor[]{MatchItem.HighlightColor.RED, MatchItem.HighlightColor.ORANGE,
-                            MatchItem.HighlightColor.YELLOW, MatchItem.HighlightColor.GREEN, MatchItem.HighlightColor.CYAN,
-                            MatchItem.HighlightColor.BLUE, MatchItem.HighlightColor.PINK, MatchItem.HighlightColor.MAGENTA,
-                            MatchItem.HighlightColor.GRAY}));
+            new DefaultComboBoxModel(
+                new MatchItem.HighlightColor[]{MatchItem.HighlightColor.RED, MatchItem.HighlightColor.ORANGE,
+                    MatchItem.HighlightColor.YELLOW, MatchItem.HighlightColor.GREEN, MatchItem.HighlightColor.CYAN,
+                    MatchItem.HighlightColor.BLUE, MatchItem.HighlightColor.PINK, MatchItem.HighlightColor.MAGENTA,
+                    MatchItem.HighlightColor.GRAY}));
 
         this.cmbHighlightColor.setEnabled(false);
         this.cmbHighlightColor.setRenderer(new DefaultListCellRenderer() {
@@ -277,46 +289,47 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
                 }
                 return l;
             }
-        });        
+        });
+        //this.pnlFreeScan.setVisible(false);        
         // FreeVersion only
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().getBurpVersion().isProfessional());
+                if (isFreeSupport()) {
+                    SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().getBurpVersion().isProfessional());            
+                }
             }
         });
 
     }
-
-    private void chkRequestStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkRequestStateChanged
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
-    }//GEN-LAST:event_chkRequestStateChanged
 
     private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
         String value = BigIPCookie.decrypt(this.txtEncrypt.getText());
         this.txtDecrypt.setText(value);
     }//GEN-LAST:event_btnDecryptActionPerformed
 
-    private void chk_CommentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chk_CommentStateChanged
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
-    }//GEN-LAST:event_chk_CommentStateChanged
-
     private void cmbHighlightColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbHighlightColorActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_cmbHighlightColorActionPerformed
 
-    private void chkItem_highlightStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkItem_highlightStateChanged
-        this.cmbHighlightColor.setEnabled(this.chkItem_highlight.isSelected());
+    private void chkPrivateIPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkPrivateIPActionPerformed
         this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
-    }//GEN-LAST:event_chkItem_highlightStateChanged
+    }//GEN-LAST:event_chkPrivateIPActionPerformed
 
-    private void chkPrivateIPStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkPrivateIPStateChanged
+    private void chkRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkRequestActionPerformed
         this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
-    }//GEN-LAST:event_chkPrivateIPStateChanged
+    }//GEN-LAST:event_chkRequestActionPerformed
 
-    private void chkResponseStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chkResponseStateChanged
+    private void chkResponseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkResponseActionPerformed
         this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
-    }//GEN-LAST:event_chkResponseStateChanged
+    }//GEN-LAST:event_chkResponseActionPerformed
+
+    private void chkItem_highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkItem_highlightActionPerformed
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+    }//GEN-LAST:event_chkItem_highlightActionPerformed
+
+    private void chk_CommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chk_CommentActionPerformed
+        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+    }//GEN-LAST:event_chk_CommentActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDecrypt;
@@ -341,7 +354,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
 
     @Override
     public String getTabCaption() {
-        return "BigIP";
+        return "BIG-IP Cookie";
     }
 
     @Override

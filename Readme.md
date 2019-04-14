@@ -3,7 +3,7 @@ Burp suite Extension BigIPDiscover
 
 Language/[Japanese](https://github.com/raise-isayan/BigIPDiscover/blob/master/Readme-ja.md)
 
-This tool is an extension of PortSwigger's product Burp Suite.
+This tool is an extension of PortSwigger product Burp Suite.
 
 It corresponds to Scanner of Burp Professional Edition.
 Also, even in the case of the Burp Community Edition, it can be detected by using the History function of Proxy.
@@ -32,7 +32,7 @@ The Burp suite Extender can be read by the following procedure.
 3. Click [Next], confirm that no error is occurring, and close the dialog with [Close].
 
 ## Configuration
-When you read the extension, the [BigIP] tab is displayed.
+When you read the extension, the [BIG-IP Cookie] tab is displayed.
 There are tabs of [Decrypt] and [Options] here and it is possible to set up etc from here.
 
 ### Decrypt Tab
@@ -84,7 +84,7 @@ PrivateIP: true
 
 ## Required libraries
 Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v1.7.39.0
+* BurpExtlib v1.7.44.0
 
 Operation is confirmed with the following versions.
 * Burp suite v1.7.36

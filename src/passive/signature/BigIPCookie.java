@@ -19,9 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import passive.IssueItem;
 import passive.PassiveCheckAdapter;
-import passive.PassiveCheckAdapter;
-import passive.SignatureItem;
 
 /**
  *
@@ -44,16 +43,16 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                 List<IScanIssue> issue = null;
                 // Response判定
                 if (property.getScanResponse() && baseRequestResponse.getResponse() != null) {
-                    issue = makeIssueList(false, baseRequestResponse, getBigIPList(false, baseRequestResponse.getResponse()));                    
+                    issue = makeIssueList(false, baseRequestResponse, getBigIPList(false, baseRequestResponse.getResponse()));
                 }
                 // Request判定
                 if (issue == null && property.getScanRequest() && baseRequestResponse.getRequest() != null) {
-                    issue = makeIssueList(true, baseRequestResponse, getBigIPList(true, baseRequestResponse.getRequest()));                    
+                    issue = makeIssueList(true, baseRequestResponse, getBigIPList(true, baseRequestResponse.getRequest()));
                 }
 
                 return issue;
             }
-            
+
             public List<IScanIssue> makeIssueList(boolean messageIsRequest, IHttpRequestResponse baseRequestResponse, List<BigIPIssueItem> issueList) {
                 List<BigIPIssueItem> markList = new ArrayList<>();
                 for (int i = 0; i < issueList.size(); i++) {
@@ -67,10 +66,9 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                 if (markList.size() > 0) {
                     List<IScanIssue> issues = new ArrayList<>();
                     IHttpRequestResponseWithMarkers applyMarks = applyMarkers(baseRequestResponse, markList);
-                     issues.add(makeScanIssue(applyMarks, markList));
+                    issues.add(makeScanIssue(applyMarks, markList));
                     return issues;
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -79,9 +77,18 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
     }
 
     @Override
-    public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<BigIPIssueItem> issueList) {
+    public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<BigIPIssueItem> issueItem) {
 
         return new IScanIssue() {
+
+            public BigIPIssueItem getItem() {
+                if (issueItem.size() > 0) {
+                    return issueItem.get(0);
+                } else {
+                    return null;
+                }
+            }
+
             @Override
             public URL getUrl() {
                 IRequestInfo reqInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
@@ -104,37 +111,31 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
             @Override
             public String getSeverity() {
-                MatchItem.Severity severity = MatchItem.Severity.INFORMATION;
-                for (BigIPIssueItem markIP : issueList) {
-                    if (markIP.isPrivateIP()) {
-                        severity = MatchItem.Severity.LOW;
-                        break; // ひとつでもPrivateIPがあればリスクをLowに
-                    }
-                }
-                return severity.toString();
+                IssueItem item = getItem();
+                return item.getServerity().toString();
             }
 
             @Override
             public String getConfidence() {
-                MatchItem.Confidence confidence = MatchItem.Confidence.CERTAIN;
-                return confidence.toString();
+                IssueItem item = getItem();
+                return item.getConfidence().toString();
             }
 
             @Override
             public String getIssueBackground() {
                 final String ISSUE_BACKGROUND = "\r\n"
-                    + "<h4>Reference:</h4>"
-                    + "<ul>"
-                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
-                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
-                    + "</ul>"
-                    + "<h4>Examples:</h4>"
-                    + "<ul>"
-                    + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>"
-                    + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
-                    + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>"
-                    + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
-                    + "</ul>";
+                        + "<h4>Reference:</h4>"
+                        + "<ul>"
+                        + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                        + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
+                        + "</ul>"
+                        + "<h4>Examples:</h4>"
+                        + "<ul>"
+                        + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>"
+                        + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
+                        + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>"
+                        + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
+                        + "</ul>";
                 return ISSUE_BACKGROUND;
             }
 
@@ -146,8 +147,8 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
             @Override
             public String getIssueDetail() {
                 StringBuilder buff = new StringBuilder();
-                buff.append("<h4>Datail:</h4>");
-                for (BigIPIssueItem markIP : issueList) {
+                buff.append("<h4>IP Address:</h4>");
+                for (BigIPIssueItem markIP : issueItem) {
                     String cookieType = markIP.isMessageIsRequest() ? "Cookie" : "Set-Cookie";
                     buff.append("<div>");
                     buff.append("<ul>");
@@ -155,10 +156,10 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     buff.append(String.format("%s: %s", cookieType, markIP.getCaptureValue()));
                     buff.append("</li>");
                     buff.append("<li>");
-                    buff.append(String.format("ip address:%s", markIP.getIPAddr()));
+                    buff.append(String.format("ip address: %s", markIP.getIPAddr()));
                     buff.append("</li>");
                     buff.append("<li>");
-                    buff.append(String.format("private ip:%s", markIP.isPrivateIP()));
+                    buff.append(String.format("private ip: %s", markIP.isPrivateIP()));
                     buff.append("</li>");
                     buff.append("</ul>");
                     buff.append("</div>");
@@ -184,7 +185,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
     }
 
-    public List<BigIPIssueItem> getBigIPList(boolean messageIsRequest, byte [] message) {
+    public List<BigIPIssueItem> getBigIPList(boolean messageIsRequest, byte[] message) {
         List<BigIPIssueItem> bigIpList = new ArrayList<>();
         // Response判定
         if (!messageIsRequest) {
@@ -200,13 +201,12 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
             byte reqHeader[] = Arrays.copyOfRange(message, 0, reqInfo.getBodyOffset());
             bigIpList.addAll(parseMessage(true, reqHeader));
         }
-        return bigIpList;                      
+        return bigIpList;
     }
-
 
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
-    
+
     /**
      * https://www.owasp.org/index.php/SCG_D_BIGIP
      * https://support.f5.com/csp/article/K6917
@@ -266,6 +266,13 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     bigIP.setEncryptCookie(cookieValue);
                     bigIP.setStart(cookieOffset + m.start());
                     bigIP.setEnd(cookieOffset + m.end());
+                    if (bigIP.isPrivateIP()) {
+                        bigIP.setServerity(MatchItem.Severity.LOW);
+                        bigIP.setConfidence(MatchItem.Confidence.CERTAIN);
+                    } else {
+                        bigIP.setServerity(MatchItem.Severity.INFORMATION);
+                        bigIP.setConfidence(MatchItem.Confidence.FIRM);
+                    }
                     list.add(bigIP);
                 }
             }
@@ -309,5 +316,5 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
         }
         return ipaddr;
     }
-    
+
 }

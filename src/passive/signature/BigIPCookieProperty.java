@@ -77,12 +77,12 @@ public class BigIPCookieProperty {
         this.highlightColor = highlightColor;
     }
 
-    public void setProperty(BigIPCookieProperty scan) {
-        this.scanRequest = scan.scanRequest;
-        this.scanResponse = scan.scanResponse;
-        this.detectionPrivateIP = scan.detectionPrivateIP;
-        this.notifyTypes = scan.notifyTypes;
-        this.highlightColor = scan.highlightColor;
+    public void setProperty(BigIPCookieProperty property) {
+        this.scanRequest = property.scanRequest;
+        this.scanResponse = property.scanResponse;
+        this.detectionPrivateIP = property.detectionPrivateIP;
+        this.notifyTypes = property.notifyTypes;
+        this.highlightColor = property.highlightColor;
     }
 
 }

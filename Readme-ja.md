@@ -34,7 +34,7 @@ Burp suite の Extenderは以下の手順で読み込めます。
 3. ｢Next｣をクリックし、エラーがでてないことを確認後、「Close」にてダイヤログを閉じる。
 
 ## 設定 
-拡張を読み込むと「BigIP」タブが表示されます。
+拡張を読み込むと[BIG-IP Cookie]タブが表示されます。
 ここには「Decrypt」、「Options」のタブがありここから設定等を行うことが可能です。
 
 ### Decrypt タブ
@@ -87,7 +87,7 @@ PrivateIP: true
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
-* BurpExtlib v1.7.39.0
+* BurpExtlib v1.7.44.0
 
 以下のバージョンで動作確認しています。
 * Burp suite v1.7.36
