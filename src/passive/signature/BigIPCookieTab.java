@@ -290,13 +290,15 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
                 return l;
             }
         });
-        //this.pnlFreeScan.setVisible(false);        
+        this.pnlFreeScan.setVisible(false);        
         // FreeVersion only
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
                 if (isFreeSupport()) {
-                    SwingUtil.setContainerEnable(pnlFreeScan, !BurpExtender.getInstance().getBurpVersion().isProfessional());            
+                    boolean isProfessional = !BurpExtender.getInstance().getBurpVersion().isProfessional();
+                    pnlFreeScan.setVisible(!isProfessional);        
+                    SwingUtil.setContainerEnable(pnlFreeScan, !isProfessional);            
                 }
             }
         });

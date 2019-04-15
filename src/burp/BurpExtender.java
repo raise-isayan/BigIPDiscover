@@ -12,6 +12,7 @@ import extend.view.base.MatchItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.rmi.UnmarshalException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,6 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     private final BigIPCookieTab tabbetOption = new BigIPCookieTab();
 
-    
     public static BurpExtender getInstance() {
         return BurpExtenderImpl.<BurpExtender>getInstance();
     }
@@ -40,8 +40,10 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         try {
             String configXML = getCallbacks().loadExtensionSetting("configXML");
             if (configXML != null) {
-                Config.loadFromXml(ConvertUtil.decompressZlibBase64(configXML), this.getProperty());
+                Config.loadFromXML(ConvertUtil.decompressZlibBase64(configXML), this.getProperty());
             }
+        } catch (UnmarshalException ex) {
+            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,7 +123,6 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             public void propertyChange(PropertyChangeEvent evt) {
                 if (IOptionProperty.BIGIP_COOKIE_PROPERTY.equals(evt.getPropertyName())) {
                     getProperty().setBigIPCookieProperty(tabbetOption.getProperty());
-                    //System.out.println(getBigIPCookieProperty().getNotifyTypes() + ":" + getBigIPCookieProperty().getHighlightColor());
                     applyOptionProperty();
                 }
             }
@@ -141,9 +142,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     }
 
-    private IOptionProperty option = new OptionProperty();
+    private final OptionProperty option = new OptionProperty();
 
-    public IOptionProperty getProperty() {
+    public OptionProperty getProperty() {
         return this.option;
     }
 

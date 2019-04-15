@@ -1,7 +1,6 @@
 package passive;
 
 import passive.signature.BigIPCookieProperty;
-import passive.IOptionProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
