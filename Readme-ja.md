@@ -87,10 +87,10 @@ PrivateIP: true
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtLib](https://github.com/raise-isayan/BurpExtLib) のライブラリを必要とします。
-* BurpExtlib v1.7.44.0
+* BurpExtlib v2.0.2
 
 以下のバージョンで動作確認しています。
-* Burp suite v1.7.36
+* Burp suite v2.1.07
 
 ## 注意事項
 このツールは、私個人が勝手に開発したもので、PortSwigger社は一切関係ありません。本ツールを使用したことによる不具合等についてPortSwiggerに問い合わせないようお願いします。

@@ -256,7 +256,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         add(tabbetOption, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
+    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/resources/release");
     
     private boolean isFreeSupport() {
         boolean freeSupport = false;

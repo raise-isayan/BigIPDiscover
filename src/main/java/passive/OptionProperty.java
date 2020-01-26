@@ -1,13 +1,11 @@
 package passive;
 
 import passive.signature.BigIPCookieProperty;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author raise.isayan
  */
-@XmlRootElement(name = "bigip")
 public class OptionProperty implements IOptionProperty {
 
     /* IOptionProperty implements */

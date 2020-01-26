@@ -6,13 +6,12 @@ import passive.signature.BigIPCookieProperty;
 import passive.IOptionProperty;
 import passive.signature.BigIPCookieTab;
 import passive.signature.BigIPCookie;
-import extend.util.ConvertUtil;
 import extend.util.IpUtil;
 import extend.view.base.MatchItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
-import java.rmi.UnmarshalException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +25,15 @@ import passive.signature.BigIPIssueItem;
  */
 public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener {
 
+    private final File CONFIG_FILE = new File(Config.getExtensionHomeDir(), Config.getExtensionFile());
+    
     private final BigIPCookieTab tabbetOption = new BigIPCookieTab();
 
+    static {
+        File logDir = Config.getExtensionHomeDir();
+        logDir.mkdirs();
+    }
+        
     public static BurpExtender getInstance() {
         return BurpExtenderImpl.<BurpExtender>getInstance();
     }
@@ -36,14 +42,17 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     /* IBurpExtender interface implements method */
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         super.registerExtenderCallbacks(callbacks);
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, e);
+            }
+        });
         callbacks.addSuiteTab(this.tabbetOption);
         try {
-            String configXML = getCallbacks().loadExtensionSetting("configXML");
-            if (configXML != null) {
-                Config.loadFromXML(ConvertUtil.decompressZlibBase64(configXML), this.getProperty());
+            if (CONFIG_FILE.exists()) {
+                Config.loadFromJson(CONFIG_FILE, this.option);
             }
-        } catch (UnmarshalException ex) {
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -132,14 +141,12 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     private void applyOptionProperty() {
         try {
-            String configXML = Config.saveToXML(this.getProperty());
-            getCallbacks().saveExtensionSetting("configXML", ConvertUtil.compressZlibBase64(configXML));
+            Config.saveToJson(CONFIG_FILE, this.option);
         } catch (IOException ex) {
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     private final OptionProperty option = new OptionProperty();
@@ -148,7 +155,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         return this.option;
     }
 
-    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/release");
+    private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/resources/release");
 
     private static String getVersion() {
         return BUNDLE.getString("version");

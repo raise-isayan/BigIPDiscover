@@ -84,10 +84,10 @@ PrivateIP: true
 
 ## Required libraries
 Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v1.7.44.0
+* BurpExtlib v2.0.2
 
 Operation is confirmed with the following versions.
-* Burp suite v1.7.36
+* Burp suite v2.1.07
 
 ## important
 This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.
