@@ -1,5 +1,6 @@
 package passive.signature;
 
+import com.google.gson.annotations.Expose;
 import extend.view.base.MatchItem;
 import java.util.EnumSet;
 
@@ -9,6 +10,7 @@ import java.util.EnumSet;
  */
 public class BigIPCookieProperty {
 
+    @Expose
     private boolean scanRequest = true;
 
     public boolean getScanRequest() {
@@ -19,6 +21,7 @@ public class BigIPCookieProperty {
         this.scanRequest = value;
     }
 
+    @Expose
     private boolean scanResponse = true;
 
     public boolean getScanResponse() {
@@ -29,6 +32,7 @@ public class BigIPCookieProperty {
         this.scanResponse = value;
     }
 
+    @Expose
     private boolean detectionPrivateIP = true;
 
     /**
@@ -45,6 +49,7 @@ public class BigIPCookieProperty {
         this.detectionPrivateIP = detectionPrivateIP;
     }
 
+    @Expose
     private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.allOf(MatchItem.NotifyType.class);
 
     /**
@@ -61,6 +66,7 @@ public class BigIPCookieProperty {
         this.notifyTypes = notifyTypes;
     }
 
+    @Expose
     private MatchItem.HighlightColor highlightColor = MatchItem.HighlightColor.RED;
 
     /**

@@ -21,7 +21,7 @@ public class Config {
     }
 
     public static String getExtensionDir() {
-        return ".BigIPDiscover";
+        return ".passiveplus";
     }
 
     public static String getExtensionFile() {

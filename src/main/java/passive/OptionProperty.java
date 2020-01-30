@@ -1,5 +1,6 @@
 package passive;
 
+import com.google.gson.annotations.Expose;
 import passive.signature.BigIPCookieProperty;
 
 /**
@@ -9,6 +10,7 @@ import passive.signature.BigIPCookieProperty;
 public class OptionProperty implements IOptionProperty {
 
     /* IOptionProperty implements */
+    @Expose
     private final BigIPCookieProperty bigipCookieProperty = new BigIPCookieProperty();
 
     @Override
