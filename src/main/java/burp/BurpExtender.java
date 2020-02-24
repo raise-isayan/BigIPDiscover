@@ -105,7 +105,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             BigIPIssueItem item = bigIpList.get(i);
             //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
             // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-            if (property.isDetectionPrivateIP() && !item.isPrivateIP()) {
+            if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
                 continue;
             }
             if (buff.length() == 0) {
@@ -198,6 +198,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             String bigIPaddr = BigIPCookie.decrypt(encrypt_value);
             System.out.println("IP addres: " + bigIPaddr);
             System.out.println("PrivateIP: " + IpUtil.isPrivateIP(bigIPaddr));
+            System.out.println("LinkLocalIP: " + IpUtil.isLinkLocalIP(bigIPaddr));
 
         } catch (Exception ex) {
             String errmsg = String.format("%s: %s", ex.getClass().getName(), ex.getMessage());

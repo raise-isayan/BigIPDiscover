@@ -1,6 +1,7 @@
 package passive.signature;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import extend.view.base.MatchItem;
 import java.util.EnumSet;
 
@@ -8,48 +9,10 @@ import java.util.EnumSet;
  *
  * @author isayan
  */
-public class BigIPCookieProperty {
+public class BigIPCookieProperty extends IPCookieProperty {
 
     @Expose
-    private boolean scanRequest = true;
-
-    public boolean getScanRequest() {
-        return this.scanRequest;
-    }
-
-    public void setScanRequest(boolean value) {
-        this.scanRequest = value;
-    }
-
-    @Expose
-    private boolean scanResponse = true;
-
-    public boolean getScanResponse() {
-        return this.scanResponse;
-    }
-
-    public void setScanResponse(boolean value) {
-        this.scanResponse = value;
-    }
-
-    @Expose
-    private boolean detectionPrivateIP = true;
-
-    /**
-     * @return the detectionPrivateIP
-     */
-    public boolean isDetectionPrivateIP() {
-        return detectionPrivateIP;
-    }
-
-    /**
-     * @param detectionPrivateIP the detectionPrivateIP to set
-     */
-    public void setDetectionPrivateIP(boolean detectionPrivateIP) {
-        this.detectionPrivateIP = detectionPrivateIP;
-    }
-
-    @Expose
+    @SerializedName("notifyTypes")
     private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.allOf(MatchItem.NotifyType.class);
 
     /**
@@ -67,6 +30,7 @@ public class BigIPCookieProperty {
     }
 
     @Expose
+    @SerializedName("highlightColor")
     private MatchItem.HighlightColor highlightColor = MatchItem.HighlightColor.RED;
 
     /**
@@ -82,11 +46,9 @@ public class BigIPCookieProperty {
     public void setHighlightColor(MatchItem.HighlightColor highlightColor) {
         this.highlightColor = highlightColor;
     }
-
+    
     public void setProperty(BigIPCookieProperty property) {
-        this.scanRequest = property.scanRequest;
-        this.scanResponse = property.scanResponse;
-        this.detectionPrivateIP = property.detectionPrivateIP;
+        super.setProperty(property);
         this.notifyTypes = property.notifyTypes;
         this.highlightColor = property.highlightColor;
     }

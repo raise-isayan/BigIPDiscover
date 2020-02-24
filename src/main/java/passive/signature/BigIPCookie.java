@@ -58,7 +58,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                 for (int i = 0; i < issueList.size(); i++) {
                     BigIPIssueItem item = issueList.get(i);
                     // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-                    if (property.isDetectionPrivateIP() && !item.isPrivateIP()) {
+                    if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
                         continue;
                     }
                     markList.add(item);
@@ -158,9 +158,17 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     buff.append("<li>");
                     buff.append(String.format("ip address: %s", markIP.getIPAddr()));
                     buff.append("</li>");
-                    buff.append("<li>");
-                    buff.append(String.format("private ip: %s", markIP.isPrivateIP()));
-                    buff.append("</li>");
+                    if (markIP.isLinkLocalIP()) {
+                        buff.append("<li>");
+                        buff.append(String.format("Link local IP: %s", markIP.isLinkLocalIP()));
+                        buff.append("</li>");                    
+                    }
+                    else {
+                        buff.append("<li>");
+                        buff.append(String.format("Private IP: %s", markIP.isPrivateIP()));
+                        buff.append("</li>");
+                    }
+
                     buff.append("</ul>");
                     buff.append("</div>");
                 }
@@ -186,22 +194,22 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
     }
 
     public List<BigIPIssueItem> getBigIPList(boolean messageIsRequest, byte[] message) {
-        List<BigIPIssueItem> bigIpList = new ArrayList<>();
+        List<BigIPIssueItem> cookieIPList = new ArrayList<>();
         // Response判定
         if (!messageIsRequest) {
             // ヘッダのみ抽出（逆に遅くなってるかも？）
             IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(message);
             byte resHeader[] = Arrays.copyOfRange(message, 0, resInfo.getBodyOffset());
-            bigIpList.addAll(parseMessage(false, resHeader));
+            cookieIPList.addAll(parseMessage(false, resHeader));
         }
         // Request判定
         if (messageIsRequest && message != null) {
             // ヘッダのみ抽出（逆に遅くなってるかも？）
             IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(message);
             byte reqHeader[] = Arrays.copyOfRange(message, 0, reqInfo.getBodyOffset());
-            bigIpList.addAll(parseMessage(true, reqHeader));
+            cookieIPList.addAll(parseMessage(true, reqHeader));
         }
-        return bigIpList;
+        return cookieIPList;
     }
 
     private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
@@ -254,26 +262,26 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
         if (cookieAll != null) {
             Matcher m = BIGIP_COOKIE.matcher(cookieAll);
             while (m.find()) {
-                BigIPIssueItem bigIP = new BigIPIssueItem();
+                BigIPIssueItem cookieIP = new BigIPIssueItem();
                 String cookieName = m.group(1);
                 String cookieValue = m.group(2);
                 String ip_addr = decrypt(cookieValue);
                 if (ip_addr != null) {
-                    bigIP.setMessageIsRequest(messageIsRequest);
-                    bigIP.setStartsBIGipServer(cookieName.startsWith("BIGipServer"));
-                    bigIP.setIPAddr(ip_addr);
-                    bigIP.setCaptureValue(m.group(0));
-                    bigIP.setEncryptCookie(cookieValue);
-                    bigIP.setStart(cookieOffset + m.start());
-                    bigIP.setEnd(cookieOffset + m.end());
-                    if (bigIP.isPrivateIP()) {
-                        bigIP.setServerity(MatchItem.Severity.LOW);
-                        bigIP.setConfidence(MatchItem.Confidence.CERTAIN);
+                    cookieIP.setMessageIsRequest(messageIsRequest);
+                    cookieIP.setStartsBIGipServer(cookieName.startsWith("BIGipServer"));
+                    cookieIP.setIPAddr(ip_addr);
+                    cookieIP.setCaptureValue(m.group(0));
+                    cookieIP.setEncryptCookie(cookieValue);
+                    cookieIP.setStart(cookieOffset + m.start());
+                    cookieIP.setEnd(cookieOffset + m.end());
+                    if (cookieIP.isPrivateIP()) {
+                        cookieIP.setServerity(MatchItem.Severity.LOW);
+                        cookieIP.setConfidence(MatchItem.Confidence.CERTAIN);
                     } else {
-                        bigIP.setServerity(MatchItem.Severity.INFORMATION);
-                        bigIP.setConfidence(MatchItem.Confidence.FIRM);
+                        cookieIP.setServerity(MatchItem.Severity.INFORMATION);
+                        cookieIP.setConfidence(MatchItem.Confidence.FIRM);
                     }
-                    list.add(bigIP);
+                    list.add(cookieIP);
                 }
             }
         }
