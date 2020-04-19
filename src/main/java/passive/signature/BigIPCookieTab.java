@@ -25,7 +25,7 @@ import javax.swing.event.DocumentListener;
  */
 public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
 
-    private final String PRIVATE_IP_INFO = "<html><ul><li>PrivateIP: %s</li></ul></html>";
+    private final String PRIVATE_IP_INFO = "<html><ul><li>PrivateIP: %s</li><li>LinkLocalIP: %s</li></ul></html>";
     
     /**
      * Creates new form BigIpDecryptTab
@@ -349,7 +349,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         String value = BigIPCookie.decrypt(this.txtEncrypt.getText());
         if (value != null) {
             try {
-                this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value)));    
+                this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));    
                 this.txtDecrypt.setText(value);
             } catch (ParseException ex) {
             }

@@ -277,6 +277,9 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     if (cookieIP.isPrivateIP()) {
                         cookieIP.setServerity(MatchItem.Severity.LOW);
                         cookieIP.setConfidence(MatchItem.Confidence.CERTAIN);
+                    } else if (cookieIP.isLinkLocalIP()) {
+                        cookieIP.setServerity(MatchItem.Severity.LOW);
+                        cookieIP.setConfidence(MatchItem.Confidence.CERTAIN);
                     } else {
                         cookieIP.setServerity(MatchItem.Severity.INFORMATION);
                         cookieIP.setConfidence(MatchItem.Confidence.FIRM);
