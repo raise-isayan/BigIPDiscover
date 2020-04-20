@@ -173,14 +173,14 @@ public class IPAddressDisclosed extends SignatureItem<IPAddressIssueItem> {
     }
 
     private final static String IPv4_PREFIX = "00000000000000000000ffff";
-    private final static Pattern IPv4_ADDR = Pattern.compile("(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})");        
+    private final static Pattern IPv4_ADDR = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2}))");        
     private final static Pattern IPv6_ADDR = Pattern.compile(
         "([0-9a-f]{1,4}(:[0-9a-f]{1,4}){7})|::"
       + "|:(:[0-9a-f]{1,4}){1,7}|([0-9a-f]{1,4}:){1,7}:"
       + "|([0-9a-f]{1,4}:){1}(:[0-9a-f]{1,4}){1,6}|([0-9a-f]{1,4}:){2}(:[0-9a-f]{1,4}){1,5}"
       + "|([0-9a-f]{1,4}:){3}(:[0-9a-f]{1,4}){1,4}|([0-9a-f]{1,4}:){4}(:[0-9a-f]{1,4}){1,3}"
       + "|([0-9a-f]{1,4}:){5}(:[0-9a-f]{1,4}){1,2}|([0-9a-f]{1,4}:){6}(:[0-9a-f]{1,4}){1}"
-    );        
+    );
     
     public static List<IPAddressIssueItem> parseMessage(boolean messageIsRequest, byte[] messageByte) {
         List<IPAddressIssueItem> list = new ArrayList<>();
