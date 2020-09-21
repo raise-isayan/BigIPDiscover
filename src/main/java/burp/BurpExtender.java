@@ -94,11 +94,11 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         final BigIPCookie bigip = new BigIPCookie(property);
         // Response判定
         if (property.getScanResponse() && messageInfo.getResponse() != null) {
-            bigIpList.addAll(bigip.getBigIPList(false, messageInfo.getResponse()));
+            bigIpList.addAll(bigip.parseMessage(false, messageInfo.getResponse()));
         }
         // Request判定
         if (property.getScanRequest() && messageInfo.getRequest() != null) {
-            bigIpList.addAll(bigip.getBigIPList(true, messageInfo.getRequest()));                
+            bigIpList.addAll(bigip.parseMessage(true, messageInfo.getRequest()));                
         }
         StringBuilder buff = new StringBuilder();
         for (int i = 0; i < bigIpList.size(); i++) {

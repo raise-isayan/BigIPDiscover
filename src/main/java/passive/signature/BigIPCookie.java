@@ -43,13 +43,12 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                 List<IScanIssue> issue = null;
                 // Response判定
                 if (property.getScanResponse() && baseRequestResponse.getResponse() != null) {
-                    issue = makeIssueList(false, baseRequestResponse, getBigIPList(false, baseRequestResponse.getResponse()));
+                    issue = makeIssueList(false, baseRequestResponse, parseMessage(false, baseRequestResponse.getResponse()));
                 }
                 // Request判定
                 if (issue == null && property.getScanRequest() && baseRequestResponse.getRequest() != null) {
-                    issue = makeIssueList(true, baseRequestResponse, getBigIPList(true, baseRequestResponse.getRequest()));
+                    issue = makeIssueList(true, baseRequestResponse, parseMessage(true, baseRequestResponse.getRequest()));
                 }
-
                 return issue;
             }
 
@@ -91,7 +90,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
             @Override
             public URL getUrl() {
-                IRequestInfo reqInfo = BurpExtender.getCallbacks().getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
+                IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
                 return reqInfo.getUrl();
             }
 
@@ -193,21 +192,21 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
     }
 
-    public List<BigIPIssueItem> getBigIPList(boolean messageIsRequest, byte[] message) {
+    public List<BigIPIssueItem> parseMessage(boolean messageIsRequest, byte[] message) {
         List<BigIPIssueItem> cookieIPList = new ArrayList<>();
         // Response判定
         if (!messageIsRequest) {
             // ヘッダのみ抽出（逆に遅くなってるかも？）
             IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(message);
             byte resHeader[] = Arrays.copyOfRange(message, 0, resInfo.getBodyOffset());
-            cookieIPList.addAll(parseMessage(false, resHeader));
+            cookieIPList.addAll(parseHeader(false, resHeader));
         }
         // Request判定
         if (messageIsRequest && message != null) {
             // ヘッダのみ抽出（逆に遅くなってるかも？）
             IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(message);
             byte reqHeader[] = Arrays.copyOfRange(message, 0, reqInfo.getBodyOffset());
-            cookieIPList.addAll(parseMessage(true, reqHeader));
+            cookieIPList.addAll(parseHeader(true, reqHeader));
         }
         return cookieIPList;
     }
@@ -231,7 +230,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
     private final static Pattern BIGIP_STANDARD_VI = Pattern.compile("vi(\\d+)\\.(\\d+)");
     private final static Pattern BIGIP_STANDARD_RD = Pattern.compile("rd\\d+o([0-9a-z]+)o(\\d+)");
 
-    public static List<BigIPIssueItem> parseMessage(boolean messageIsRequest, byte[] messageByte) {
+    public static List<BigIPIssueItem> parseHeader(boolean messageIsRequest, byte[] messageByte) {
         List<BigIPIssueItem> list = new ArrayList<>();
         String message = Util.getRawStr(messageByte);
         String cookieAll = null;
