@@ -1,7 +1,7 @@
 Burp suite Extension BigIPDiscover
 =============
 
-Language/[Japanese](https://github.com/raise-isayan/BigIPDiscover/blob/master/Readme-ja.md)
+Language/[Japanese](Readme-ja.md)
 
 This tool is an extension of PortSwigger product Burp Suite.
 

@@ -24,6 +24,7 @@ import passive.signature.BigIPIssueItem;
  * @author isayan
  */
 public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHttpListener {
+    private final static Logger logger = Logger.getLogger(BurpExtender.class.getName());
 
     private final File CONFIG_FILE = new File(Config.getExtensionHomeDir(), Config.getExtensionFile());
     
@@ -45,7 +46,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, e);
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         });
         callbacks.addSuiteTab(this.tabbetOption);
@@ -54,7 +55,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
                 Config.loadFromJson(CONFIG_FILE, this.option);
             }
         } catch (IOException ex) {
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
         this.tabbetOption.setProperty(this.getProperty().getBigIPCookieProperty());
@@ -83,7 +84,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             try {
                 freePassiveScan(messageInfo);
             } catch (Exception ex) {
-                Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -143,9 +144,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         try {
             Config.saveToJson(CONFIG_FILE, this.option);
         } catch (IOException ex) {
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (Exception ex) {
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -203,7 +204,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         } catch (Exception ex) {
             String errmsg = String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
             System.out.println(errmsg);
-            Logger.getLogger(BurpExtender.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
             usage();
         }
     }
