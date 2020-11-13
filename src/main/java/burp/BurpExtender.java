@@ -43,6 +43,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     /* IBurpExtender interface implements method */
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         super.registerExtenderCallbacks(callbacks);
+        callbacks.setExtensionName(String.format("%s v%s", BUNDLE.getString("projname"),BUNDLE.getString("version")));
+
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
