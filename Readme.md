@@ -82,9 +82,20 @@ IP addres: 10.1.1.100:8080
 PrivateIP: true
 ```
 
+## build
+
+```
+gradlew build
+```
+
 ## Required libraries
 Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v2.0.14
+* BurpExtlib v2.1.2.0
+
+## Use Library
+* gson (https://github.com/google/gson)
+  * Apache License 2.0
+  * https://github.com/google/gson/blob/master/LICENSE
 
 Operation is confirmed with the following versions.
 * Burp suite v2.1.0
