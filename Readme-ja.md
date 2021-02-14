@@ -88,7 +88,7 @@ PrivateIP: true
 ## ビルド
 
 ```
-gradlew build
+gradlew release
 ```
 
 ## 必須ライブラリ
@@ -97,7 +97,7 @@ gradlew build
 
 ### 利用ライブラリ
 
-* gson (https://github.com/google/gson)
+* google gson (https://github.com/google/gson)
   * Apache License 2.0
   * https://github.com/google/gson/blob/master/LICENSE
 

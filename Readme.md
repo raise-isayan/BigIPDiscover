@@ -85,15 +85,15 @@ PrivateIP: true
 ## build
 
 ```
-gradlew build
+gradlew release
 ```
 
 ## Required libraries
 Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v2.1.2.0
+* BurpExtlib v2.1.2.1
 
 ## Use Library
-* gson (https://github.com/google/gson)
+* google gson (https://github.com/google/gson)
   * Apache License 2.0
   * https://github.com/google/gson/blob/master/LICENSE
 

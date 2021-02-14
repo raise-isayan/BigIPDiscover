@@ -16,16 +16,24 @@ tasks.withType(JavaCompile) {
 }
 
 processResources {
+    filteringCharset = 'UTF-8'
     filesMatching ('**/*.properties') {
        expand(project.properties)
+       // naitive2ascii
+       filter(org.apache.tools.ant.filters.EscapeUnicode)
     }
 }
 
-clean.doFirst { 
-    delete 'release';
+clean.doFirst {
+    delete fileTree('release') {
+      include '*.jar'
+    }
 }
 
 jar {
+    // Keep jar clean:
+    exclude 'META-INF/**', 'about.html', 'module-info.class'
+
     manifest {
         attributes 'Main-Class': mainClassName
     }
@@ -34,8 +42,9 @@ jar {
         configurations.runtimeClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
-    destinationDir = file('release')
-    version =  "v${release_version_major}"
+    destinationDirectory = file('release')
+    archiveVersion =  "v${release_version_major}"
+
 }
 
 task release(type: Zip, dependsOn: ['build']) {
