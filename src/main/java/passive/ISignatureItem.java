@@ -1,13 +1,14 @@
 package passive;
 
-import extend.view.base.MatchItem;
+import extension.burp.Severity;
+
 
 /**
  *
  * @author isayan
  */
 public interface ISignatureItem {
-    
+
     /**
      * @return the enable
      */
@@ -17,7 +18,7 @@ public interface ISignatureItem {
      * @param enable the enable to set
      */
     public void setEnable(boolean enable);
-    
+
     /**
      * @return the issueName
      */
@@ -26,6 +27,6 @@ public interface ISignatureItem {
     /**
      * @return the serverity
      */
-    public MatchItem.Severity getServerity();
-    
+    public Severity getServerity();
+
 }

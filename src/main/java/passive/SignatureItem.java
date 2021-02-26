@@ -5,7 +5,7 @@ import burp.IHttpRequestResponse;
 import burp.IHttpRequestResponseWithMarkers;
 import burp.IScanIssue;
 import burp.IScannerCheck;
-import extend.view.base.MatchItem;
+import extension.burp.Severity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class SignatureItem<M extends IssueItem> implements ISignatureItem {
 
-    public SignatureItem(String issueName, MatchItem.Severity serverity) {
+    public SignatureItem(String issueName, Severity serverity) {
         this.issueName = issueName;
         this.serverity = serverity;
     }
@@ -45,10 +45,10 @@ public class SignatureItem<M extends IssueItem> implements ISignatureItem {
         return issueName;
     }
 
-    private final MatchItem.Severity serverity;
+    private final Severity serverity;
 
     @Override
-    public MatchItem.Severity getServerity() {
+    public Severity getServerity() {
         return serverity;
     }
 
@@ -68,13 +68,13 @@ public class SignatureItem<M extends IssueItem> implements ISignatureItem {
                 requestMarkers.add(new int [] { issue.start(), issue.end() });
             }
             else {
-                responseMarkers.add(new int [] { issue.start(), issue.end() });            
+                responseMarkers.add(new int [] { issue.start(), issue.end() });
             }
         }
         List<int[]> applyRequestMarkers = (requestMarkers.size() > 0) ? requestMarkers : null;
         List<int[]> applyResponseMarkers = (responseMarkers.size() > 0) ? responseMarkers : null;
-        
-        return BurpExtender.getCallbacks().applyMarkers(baseRequestResponse, applyRequestMarkers, applyResponseMarkers);            
+
+        return BurpExtender.getCallbacks().applyMarkers(baseRequestResponse, applyRequestMarkers, applyResponseMarkers);
     }
-        
+
 }

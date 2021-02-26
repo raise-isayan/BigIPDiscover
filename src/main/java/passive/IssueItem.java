@@ -1,14 +1,15 @@
 package passive;
 
-import extend.view.base.CaptureItem;
-import extend.view.base.MatchItem;
+import extension.burp.Confidence;
+import extension.burp.Severity;
+import extension.view.base.CaptureItem;
 
 /**
  *
  * @author raise.isayan
  */
 public class IssueItem extends CaptureItem {
-            
+
     private boolean messageIsRequest = false;
 
     /**
@@ -40,36 +41,36 @@ public class IssueItem extends CaptureItem {
     public void setType(String type) {
         this.type = type;
     }
-        
-    private MatchItem.Severity serverity = MatchItem.Severity.INFORMATION;
+
+    private Severity serverity = Severity.INFORMATION;
 
     /**
      * @return the serverity
      */
-    public MatchItem.Severity getServerity() {
+    public Severity getServerity() {
         return serverity;
     }
 
     /**
      * @param serverity the serverity to set
      */
-    public void setServerity(MatchItem.Severity serverity) {
+    public void setServerity(Severity serverity) {
         this.serverity = serverity;
     }
 
-    private MatchItem.Confidence confidence = MatchItem.Confidence.CERTAIN;
+    private Confidence confidence = Confidence.CERTAIN;
 
     /**
      * @return the confidence
      */
-    public MatchItem.Confidence getConfidence() {
+    public Confidence getConfidence() {
         return confidence;
     }
 
     /**
      * @param confidence the confidence to set
      */
-    public void setConfidence(MatchItem.Confidence confidence) {
+    public void setConfidence(Confidence confidence) {
         this.confidence = confidence;
     }
 

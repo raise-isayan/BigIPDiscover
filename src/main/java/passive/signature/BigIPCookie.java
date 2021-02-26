@@ -9,9 +9,10 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScanIssue;
 import burp.IScannerCheck;
-import extend.util.IpUtil;
-import extend.util.Util;
-import extend.view.base.MatchItem;
+import extension.burp.Confidence;
+import extension.burp.Severity;
+import extension.helpers.StringUtil;
+import extension.helpers.IpUtil;
 import java.net.URL;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
     private final BigIPCookieProperty property;
 
     public BigIPCookie(final BigIPCookieProperty property) {
-        super("BIG-IP Cookie Discloses IP Address", MatchItem.Severity.LOW);
+        super("BIG-IP Cookie Discloses IP Address", Severity.LOW);
         this.property = property;
     }
 
@@ -232,7 +233,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
     public static List<BigIPIssueItem> parseHeader(boolean messageIsRequest, byte[] messageByte) {
         List<BigIPIssueItem> list = new ArrayList<>();
-        String message = Util.getRawStr(messageByte);
+        String message = StringUtil.getStringRaw(messageByte);
         String cookieAll = null;
         int cookieOffset = 0;
 
@@ -274,14 +275,14 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     cookieIP.setStart(cookieOffset + m.start());
                     cookieIP.setEnd(cookieOffset + m.end());
                     if (cookieIP.isPrivateIP()) {
-                        cookieIP.setServerity(MatchItem.Severity.LOW);
-                        cookieIP.setConfidence(MatchItem.Confidence.CERTAIN);
+                        cookieIP.setServerity(Severity.LOW);
+                        cookieIP.setConfidence(Confidence.CERTAIN);
                     } else if (cookieIP.isLinkLocalIP()) {
-                        cookieIP.setServerity(MatchItem.Severity.LOW);
-                        cookieIP.setConfidence(MatchItem.Confidence.CERTAIN);
+                        cookieIP.setServerity(Severity.LOW);
+                        cookieIP.setConfidence(Confidence.CERTAIN);
                     } else {
-                        cookieIP.setServerity(MatchItem.Severity.INFORMATION);
-                        cookieIP.setConfidence(MatchItem.Confidence.FIRM);
+                        cookieIP.setServerity(Severity.INFORMATION);
+                        cookieIP.setConfidence(Confidence.FIRM);
                     }
                     list.add(cookieIP);
                 }

@@ -6,8 +6,8 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = '1.8' // -source
-targetCompatibility = '1.8' // -target
+sourceCompatibility = '11' // -source
+targetCompatibility = '11' // -target
 
 mainClassName = 'passive.BigIPDiscover'
 
@@ -37,7 +37,7 @@ jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-    
+
     from {
         configurations.runtimeClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
     }

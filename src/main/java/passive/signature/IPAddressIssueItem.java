@@ -1,6 +1,6 @@
 package passive.signature;
 
-import extend.util.IpUtil;
+import extension.helpers.IpUtil;
 import java.text.ParseException;
 import passive.IssueItem;
 

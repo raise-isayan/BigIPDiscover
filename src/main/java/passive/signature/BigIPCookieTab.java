@@ -3,10 +3,11 @@ package passive.signature;
 import burp.BurpExtender;
 import passive.IOptionProperty;
 import burp.ITab;
-import extend.util.IpUtil;
-import extend.util.SwingUtil;
-import extend.util.Util;
-import extend.view.base.MatchItem;
+import extension.burp.HighlightColor;
+import extension.burp.NotifyType;
+import extension.helpers.ConvertUtil;
+import extension.helpers.IpUtil;
+import extension.helpers.SwingUtil;
 import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.text.ParseException;
@@ -26,7 +27,7 @@ import javax.swing.event.DocumentListener;
 public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
 
     private final String PRIVATE_IP_INFO = "<html><ul><li>PrivateIP: %s</li><li>LinkLocalIP: %s</li></ul></html>";
-    
+
     /**
      * Creates new form BigIpDecryptTab
      */
@@ -275,24 +276,24 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
     }// </editor-fold>//GEN-END:initComponents
 
     private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/resources/release");
-    
+
     private boolean isFreeSupport() {
         boolean freeSupport = false;
         try {
-            freeSupport = Util.parseBooleanDefault(BUNDLE.getString("freeSupport"), false);        
-        } catch (MissingResourceException ex) {        
+            freeSupport = ConvertUtil.parseBooleanDefault(BUNDLE.getString("freeSupport"), false);
+        } catch (MissingResourceException ex) {
         }
         return freeSupport;
     }
-    
+
     private void customizeComponents() {
 
         this.cmbHighlightColor.setModel(
-            new DefaultComboBoxModel(
-                new MatchItem.HighlightColor[]{MatchItem.HighlightColor.RED, MatchItem.HighlightColor.ORANGE,
-                    MatchItem.HighlightColor.YELLOW, MatchItem.HighlightColor.GREEN, MatchItem.HighlightColor.CYAN,
-                    MatchItem.HighlightColor.BLUE, MatchItem.HighlightColor.PINK, MatchItem.HighlightColor.MAGENTA,
-                    MatchItem.HighlightColor.GRAY}));
+                new DefaultComboBoxModel(
+                        new HighlightColor[]{HighlightColor.RED, HighlightColor.ORANGE,
+                            HighlightColor.YELLOW, HighlightColor.GREEN, HighlightColor.CYAN,
+                            HighlightColor.BLUE, HighlightColor.PINK, HighlightColor.MAGENTA,
+                            HighlightColor.GRAY}));
 
         this.cmbHighlightColor.setEnabled(false);
         this.cmbHighlightColor.setRenderer(new DefaultListCellRenderer() {
@@ -300,7 +301,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                MatchItem.HighlightColor hc = (MatchItem.HighlightColor) value;
+                HighlightColor hc = (HighlightColor) value;
                 if (hc != null) {
                     l.setIcon(hc.toIcon());
                     l.setIconTextGap(2);
@@ -325,37 +326,37 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
             public void changedUpdate(DocumentEvent e) {
                 lblDecryptInfo.setText("");
                 txtDecrypt.setText("");
-            }        
+            }
         });
 
-        this.pnlFreeScan.setVisible(isFreeSupport());        
+        this.pnlFreeScan.setVisible(isFreeSupport());
         // FreeVersion only
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
                 if (isFreeSupport()) {
                     boolean isProfessional = BurpExtender.getInstance().getBurpVersion().isProfessional();
-                    pnlFreeScan.setVisible(isFreeSupport());        
-                    SwingUtil.setContainerEnable(pnlFreeScan, !isProfessional);            
+                    pnlFreeScan.setVisible(isFreeSupport());
+                    SwingUtil.setContainerEnable(pnlFreeScan, !isProfessional);
                 }
             }
         });
-        
+
     }
 
     private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
-        this.txtDecrypt.setText("");        
+        this.txtDecrypt.setText("");
         this.lblDecryptInfo.setText("");
         String value = BigIPCookie.decrypt(this.txtEncrypt.getText());
         if (value != null) {
             try {
-                this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));    
+                this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));
                 this.txtDecrypt.setText(value);
             } catch (ParseException ex) {
             }
         }
     }//GEN-LAST:event_btnDecryptActionPerformed
-    
+
     private void cmbHighlightColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbHighlightColorActionPerformed
         this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_cmbHighlightColorActionPerformed
@@ -416,9 +417,9 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         this.chkRequest.setSelected(property.getScanRequest());
         this.chkResponse.setSelected(property.getScanResponse());
 
-        EnumSet<MatchItem.NotifyType> notifyTypes = property.getNotifyTypes();
-        this.chkItem_highlight.setSelected(notifyTypes.contains(MatchItem.NotifyType.ITEM_HIGHLIGHT));
-        this.chk_Comment.setSelected(notifyTypes.contains(MatchItem.NotifyType.COMMENT));
+        EnumSet<NotifyType> notifyTypes = property.getNotifyTypes();
+        this.chkItem_highlight.setSelected(notifyTypes.contains(NotifyType.ITEM_HIGHLIGHT));
+        this.chk_Comment.setSelected(notifyTypes.contains(NotifyType.COMMENT));
         this.cmbHighlightColor.setSelectedItem(property.getHighlightColor());
 
         this.chkPrivateIP.setSelected(property.isDetectionPrivateIP());
@@ -429,16 +430,16 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         property.setScanRequest(this.chkRequest.isSelected());
         property.setScanResponse(this.chkResponse.isSelected());
 
-        EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.noneOf(MatchItem.NotifyType.class);
+        EnumSet<NotifyType> notifyTypes = EnumSet.noneOf(NotifyType.class);
         if (this.chkItem_highlight.isSelected()) {
-            notifyTypes.add(MatchItem.NotifyType.ITEM_HIGHLIGHT);
+            notifyTypes.add(NotifyType.ITEM_HIGHLIGHT);
         }
         if (this.chk_Comment.isSelected()) {
-            notifyTypes.add(MatchItem.NotifyType.COMMENT);
+            notifyTypes.add(NotifyType.COMMENT);
         }
         property.setNotifyTypes(notifyTypes);
-        if (property.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
-            property.setHighlightColor((MatchItem.HighlightColor) this.cmbHighlightColor.getSelectedItem());
+        if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
+            property.setHighlightColor((HighlightColor) this.cmbHighlightColor.getSelectedItem());
         }
         property.setDetectionPrivateIP(this.chkPrivateIP.isSelected());
 

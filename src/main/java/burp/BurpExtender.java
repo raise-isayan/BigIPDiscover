@@ -1,13 +1,13 @@
 package burp;
 
+import extension.burp.BurpExtenderImpl;
+import extension.burp.NotifyType;
 import passive.Config;
 import passive.OptionProperty;
 import passive.signature.BigIPCookieProperty;
 import passive.IOptionProperty;
 import passive.signature.BigIPCookieTab;
 import passive.signature.BigIPCookie;
-import extend.util.IpUtil;
-import extend.view.base.MatchItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -27,14 +27,14 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     private final static Logger logger = Logger.getLogger(BurpExtender.class.getName());
 
     private final File CONFIG_FILE = new File(Config.getExtensionHomeDir(), Config.getExtensionFile());
-    
+
     private final BigIPCookieTab tabbetOption = new BigIPCookieTab();
 
     static {
         File logDir = Config.getExtensionHomeDir();
         logDir.mkdirs();
     }
-        
+
     public static BurpExtender getInstance() {
         return BurpExtenderImpl.<BurpExtender>getInstance();
     }
@@ -101,7 +101,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         }
         // Request判定
         if (property.getScanRequest() && messageInfo.getRequest() != null) {
-            bigIpList.addAll(bigip.parseMessage(true, messageInfo.getRequest()));                
+            bigIpList.addAll(bigip.parseMessage(true, messageInfo.getRequest()));
         }
         StringBuilder buff = new StringBuilder();
         for (int i = 0; i < bigIpList.size(); i++) {
@@ -119,10 +119,10 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             buff.append(item.getIPAddr());
         }
         if (buff.length() > 0) {
-            if (property.getNotifyTypes().contains(MatchItem.NotifyType.ITEM_HIGHLIGHT)) {
+            if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
                 messageInfo.setHighlight(property.getHighlightColor().toString());
             }
-            if (this.getProperty().getBigIPCookieProperty().getNotifyTypes().contains(MatchItem.NotifyType.COMMENT)) {
+            if (this.getProperty().getBigIPCookieProperty().getNotifyTypes().contains(NotifyType.COMMENT)) {
                 messageInfo.setComment(buff.toString());
             }
         }

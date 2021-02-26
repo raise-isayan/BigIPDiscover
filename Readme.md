@@ -88,9 +88,9 @@ PrivateIP: true
 gradlew release
 ```
 
-## Required libraries
-Build requires a separate library of [BurpExtLib](https://github.com/raise-isayan/BurpExtLib).
-* BurpExtlib v2.1.2.1
+## Required library
+Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpExtensionCommons) library.
+* BurpExtensionCommons v0.4.1.0
 
 ## Use Library
 * google gson (https://github.com/google/gson)

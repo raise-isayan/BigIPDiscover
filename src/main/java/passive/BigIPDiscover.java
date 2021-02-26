@@ -1,7 +1,7 @@
 package passive;
 
 import burp.BurpExtender;
-import extend.util.IpUtil;
+import extension.helpers.IpUtil;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,5 +76,5 @@ public class BigIPDiscover {
     public static String getVersion() {
         return BUNDLE.getString("version");
     }
-    
+
 }

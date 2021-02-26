@@ -1,6 +1,6 @@
 package passive.signature;
 
-import extend.util.Util;
+import extension.helpers.StringUtil;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,7 +40,7 @@ public class BigIPCookieTest {
             + "Cookie: %s\r\n"
             + "Connection: close\r\n";
 
-    private final static String RES_TEST_FMT = "GHTTP/1.1 200 OK\r\n"
+    private final static String RES_TEST_FMT = "HTTP/1.1 200 OK\r\n"
             + "Content-Length: 0\r\n"
             + "Content-Type: text/html\r\n"
             + "Set-Cookie: %s\r\n";
@@ -66,7 +66,7 @@ public class BigIPCookieTest {
             + "Content-Length: 116\r\n"
             + "Connection: close\r\n"
             + "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    
+
     /**
      * Test of decrypt method, of class BigIPCookie.
      */
@@ -74,12 +74,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Req1() {
         System.out.println("BigIpEncrypt Req1");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("10.1.1.100:8080", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("10.1.1.100:8080", bigIP2.get(0).getIPAddr());
         assertEquals(false, bigIP2.get(0).startsBIGipServer());
     }
@@ -91,12 +91,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Req2() {
         System.out.println("BigIpEncrypt Req2");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP2.get(0).getIPAddr());
         assertEquals(false, bigIP2.get(0).startsBIGipServer());
     }
@@ -108,12 +108,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Req3() {
         System.out.println("BigIpEncrypt Req3");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("192.0.2.1:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("192.0.2.1:80", bigIP2.get(0).getIPAddr());
         assertEquals(false, bigIP2.get(0).startsBIGipServer());
     }
@@ -125,12 +125,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Req4() {
         System.out.println("BigIpEncrypt Req4");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP2.get(0).getIPAddr());
         assertEquals(false, bigIP2.get(0).startsBIGipServer());
 
@@ -158,12 +158,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Res1() {
         System.out.println("BigIpEncrypt Res1");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("10.1.1.100:8080", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("10.1.1.100:8080", bigIP2.get(0).getIPAddr());
         assertEquals(false, bigIP2.get(0).startsBIGipServer());
     }
@@ -175,12 +175,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Res2() {
         System.out.println("BigIpEncrypt Res2");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP2.get(0).getIPAddr());
     }
 
@@ -191,12 +191,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Res3() {
         System.out.println("BigIpEncrypt Res3");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("192.0.2.1:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("192.0.2.1:80", bigIP2.get(0).getIPAddr());
     }
 
@@ -207,12 +207,12 @@ public class BigIPCookieTest {
     public void testBigIPCookie_Res4() {
         System.out.println("BigIpEncrypt Res4");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", bigIP2.get(0).getIPAddr());
     }
 
@@ -222,7 +222,7 @@ public class BigIPCookieTest {
     @Test
     public void testBigIPCookie_Res10() {
         System.out.println("BigIpEncrypt Res10");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(RES_TEST10_FMT));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(RES_TEST10_FMT));
         assertEquals("10.1.1.100:8080", bigIP1.get(0).getIPAddr());
         assertEquals(true, bigIP1.get(0).isPrivateIP());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
@@ -234,12 +234,12 @@ public class BigIPCookieTest {
     @Test
     public void testBigIPCookie_Res11() {
         System.out.println("BigIpEncrypt Res11");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(RES_TEST11_FMT));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(RES_TEST11_FMT));
         assertEquals("192.0.2.1:80", bigIP1.get(0).getIPAddr());
         assertEquals(false, bigIP1.get(0).isPrivateIP());
         assertEquals(true, bigIP1.get(0).startsBIGipServer());
     }
-    
+
     /**
      * Test of decrypt method, of class BigIPCookie.
      */
@@ -250,7 +250,7 @@ public class BigIPCookieTest {
         assertEquals("10.1.1.100:8080", ip1);
 
         String ip2 = BigIPCookie.decrypt("vi20010112000000000000000000000030.20480");
-        //  [2001:0112::0030]:80 
+        //  [2001:0112::0030]:80
         assertEquals("[2001:0112:0000:0000:0000:0000:0000:0030]:80", ip2);
 
         String ip3 = BigIPCookie.decrypt("rd5o00000000000000000000ffffc0000201o80");
@@ -282,11 +282,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Req1() {
         System.out.println("start and end req1");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("BIGipServer_aa_bb_cc=1677787402.36895.0000", req1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("aa_bb_cc=1677787402.36895.0000", req2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 
@@ -297,11 +297,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Req2() {
         System.out.println("start and end req2");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480", req1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("aa_bb_cc=vi20010112000000000000000000000030.20480", req2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 
@@ -312,11 +312,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Req3() {
         System.out.println("start and end req3");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80", req1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("aa_bb_cc=rd5o00000000000000000000ffffc0000201o80", req2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
 
     }
@@ -328,11 +328,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Req4() {
         System.out.println("start and end req4");
         String req1 = String.format(REQ_TEST_FMT, "BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, Util.getRawByte(req1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req1));
         assertEquals("BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80", req1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String req2 = String.format(REQ_TEST_FMT, "aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, Util.getRawByte(req2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(true, StringUtil.getBytesRaw(req2));
         assertEquals("aa_bb_cc=rd3o20010112000000000000000000000030o80", req2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 
@@ -343,11 +343,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Res1() {
         System.out.println("start and end res1");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("BIGipServer_aa_bb_cc=1677787402.36895.0000", res1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=1677787402.36895.0000");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("aa_bb_cc=1677787402.36895.0000", res2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 
@@ -358,11 +358,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Res2() {
         System.out.println("start and end res2");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("BIGipServer_aa_bb_cc=vi20010112000000000000000000000030.20480", res1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=vi20010112000000000000000000000030.20480");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("aa_bb_cc=vi20010112000000000000000000000030.20480", res2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 
@@ -373,11 +373,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Res3() {
         System.out.println("start and end res3");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("BIGipServer_aa_bb_cc=rd5o00000000000000000000ffffc0000201o80", res1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=rd5o00000000000000000000ffffc0000201o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("aa_bb_cc=rd5o00000000000000000000ffffc0000201o80", res2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
 
     }
@@ -389,11 +389,11 @@ public class BigIPCookieTest {
     public void testStartEnd_Res4() {
         System.out.println("start and end res4");
         String res1 = String.format(RES_TEST_FMT, "BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, Util.getRawByte(res1));
+        List<BigIPIssueItem> bigIP1 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res1));
         assertEquals("BIGipServer_aa_bb_cc=rd3o20010112000000000000000000000030o80", res1.substring(bigIP1.get(0).start(), bigIP1.get(0).end()));
 
         String res2 = String.format(RES_TEST_FMT, "aa_bb_cc=rd3o20010112000000000000000000000030o80");
-        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, Util.getRawByte(res2));
+        List<BigIPIssueItem> bigIP2 = BigIPCookie.parseHeader(false, StringUtil.getBytesRaw(res2));
         assertEquals("aa_bb_cc=rd3o20010112000000000000000000000030o80", res2.substring(bigIP2.get(0).start(), bigIP2.get(0).end()));
     }
 

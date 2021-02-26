@@ -2,7 +2,8 @@ package passive.signature;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import extend.view.base.MatchItem;
+import extension.burp.HighlightColor;
+import extension.burp.NotifyType;
 import java.util.EnumSet;
 
 /**
@@ -13,37 +14,37 @@ public class BigIPCookieProperty extends IPCookieProperty {
 
     @Expose
     @SerializedName("notifyTypes")
-    private EnumSet<MatchItem.NotifyType> notifyTypes = EnumSet.allOf(MatchItem.NotifyType.class);
+    private EnumSet<NotifyType> notifyTypes = EnumSet.allOf(NotifyType.class);
 
     /**
      * @return the notifyTypes
      */
-    public EnumSet<MatchItem.NotifyType> getNotifyTypes() {
+    public EnumSet<NotifyType> getNotifyTypes() {
         return this.notifyTypes;
     }
 
     /**
      * @param notifyTypes the notifyType to set
      */
-    public void setNotifyTypes(EnumSet<MatchItem.NotifyType> notifyTypes) {
+    public void setNotifyTypes(EnumSet<NotifyType> notifyTypes) {
         this.notifyTypes = notifyTypes;
     }
 
     @Expose
     @SerializedName("highlightColor")
-    private MatchItem.HighlightColor highlightColor = MatchItem.HighlightColor.RED;
+    private HighlightColor highlightColor = HighlightColor.RED;
 
     /**
      * @return the highlightColor
      */
-    public MatchItem.HighlightColor getHighlightColor() {
+    public HighlightColor getHighlightColor() {
         return this.highlightColor;
     }
 
     /**
      * @param highlightColor the highlightColor to set
      */
-    public void setHighlightColor(MatchItem.HighlightColor highlightColor) {
+    public void setHighlightColor(HighlightColor highlightColor) {
         this.highlightColor = highlightColor;
     }
     
