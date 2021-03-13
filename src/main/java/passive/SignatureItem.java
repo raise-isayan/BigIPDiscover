@@ -5,6 +5,7 @@ import burp.IHttpRequestResponse;
 import burp.IHttpRequestResponseWithMarkers;
 import burp.IScanIssue;
 import burp.IScannerCheck;
+import extension.burp.ScannerCheckAdapter;
 import extension.burp.Severity;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class SignatureItem<M extends IssueItem> implements ISignatureItem {
     }
 
     public IScannerCheck passiveScanCheck() {
-        return new PassiveCheckAdapter();
+        return new ScannerCheckAdapter();
     }
 
     public IHttpRequestResponseWithMarkers applyMarkers(IHttpRequestResponse baseRequestResponse, List<M> issueList) {

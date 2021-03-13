@@ -90,7 +90,7 @@ gradlew release
 
 ## Required library
 Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpExtensionCommons) library.
-* BurpExtensionCommons v0.4.1.0
+* BurpExtensionCommons v0.4.x
 
 ## Use Library
 * google gson (https://github.com/google/gson)

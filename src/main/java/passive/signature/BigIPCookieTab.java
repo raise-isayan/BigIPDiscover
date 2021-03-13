@@ -13,6 +13,8 @@ import java.awt.event.ComponentEvent;
 import java.text.ParseException;
 import java.util.EnumSet;
 import java.util.MissingResourceException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
@@ -25,6 +27,7 @@ import javax.swing.event.DocumentListener;
  * @author isayan
  */
 public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
+    private final static Logger logger = Logger.getLogger(BigIPCookieTab.class.getName());
 
     private final String PRIVATE_IP_INFO = "<html><ul><li>PrivateIP: %s</li><li>LinkLocalIP: %s</li></ul></html>";
 
@@ -282,6 +285,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
         try {
             freeSupport = ConvertUtil.parseBooleanDefault(BUNDLE.getString("freeSupport"), false);
         } catch (MissingResourceException ex) {
+            logger.log(Level.INFO, ex.getMessage(), ex);
         }
         return freeSupport;
     }
@@ -353,6 +357,7 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
                 this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));
                 this.txtDecrypt.setText(value);
             } catch (ParseException ex) {
+                logger.log(Level.INFO, ex.getMessage(), ex);
             }
         }
     }//GEN-LAST:event_btnDecryptActionPerformed

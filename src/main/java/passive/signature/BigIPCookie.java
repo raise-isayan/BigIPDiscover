@@ -10,6 +10,7 @@ import burp.IResponseInfo;
 import burp.IScanIssue;
 import burp.IScannerCheck;
 import extension.burp.Confidence;
+import extension.burp.ScannerCheckAdapter;
 import extension.burp.Severity;
 import extension.helpers.StringUtil;
 import extension.helpers.IpUtil;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import passive.IssueItem;
-import passive.PassiveCheckAdapter;
 
 /**
  *
@@ -38,7 +38,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
 
     @Override
     public IScannerCheck passiveScanCheck() {
-        return new PassiveCheckAdapter() {
+        return new ScannerCheckAdapter() {
             @Override
             public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
                 List<IScanIssue> issue = null;
@@ -161,7 +161,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
                     if (markIP.isLinkLocalIP()) {
                         buff.append("<li>");
                         buff.append(String.format("Link local IP: %s", markIP.isLinkLocalIP()));
-                        buff.append("</li>");                    
+                        buff.append("</li>");
                     }
                     else {
                         buff.append("<li>");
