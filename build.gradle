@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 apply plugin: 'application'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 sourceCompatibility = '11' // -source
@@ -69,7 +69,7 @@ dependencies {
     // https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api
     implementation 'net.portswigger.burp.extender:burp-extender-api:2.1'
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.7'
     // UnitTest
     // https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api
     testImplementation 'net.portswigger.burp.extender:burp-extender-api:2.1'
