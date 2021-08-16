@@ -1,6 +1,5 @@
 package passive;
 
-import burp.BurpExtender;
 import extension.helpers.IpUtil;
 import java.util.Arrays;
 import java.util.logging.Level;

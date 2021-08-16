@@ -9,11 +9,17 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScanIssue;
 import burp.IScannerCheck;
+import burp.ITab;
 import extension.burp.Confidence;
+import extension.burp.NotifyType;
 import extension.burp.ScannerCheckAdapter;
 import extension.burp.Severity;
 import extension.helpers.StringUtil;
 import extension.helpers.IpUtil;
+import extension.helpers.json.JsonUtil;
+import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -27,15 +33,29 @@ import passive.IssueItem;
  *
  * @author isayan
  */
-public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
+public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, ISignatureConfig {
 
-    private final BigIPCookieProperty property;
+    public final static String BIGIP_COOKIE_PROPERTY = StringUtil.toCamelCase(BigIPCookieProperty.class.getSimpleName());
+        
+    private final BigIPCookieTab tabBigIPCookie = new BigIPCookieTab();
 
-    public BigIPCookie(final BigIPCookieProperty property) {
+    public BigIPCookie() {
         super("BIG-IP Cookie Discloses IP Address", Severity.LOW);
-        this.property = property;
+        this.tabBigIPCookie.addPropertyChangeListener(this.newPropertyChangeListener());
     }
 
+    public final PropertyChangeListener newPropertyChangeListener() {
+        return new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (BIGIP_COOKIE_PROPERTY.equals(evt.getPropertyName())) {
+                    BigIPCookieProperty bigIPCookie = tabBigIPCookie.getProperty();
+                    property.setProperty(bigIPCookie);
+                }
+            }
+        };
+    }
+    
     @Override
     public IScannerCheck passiveScanCheck() {
         return new ScannerCheckAdapter() {
@@ -328,4 +348,67 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> {
         return ipaddr;
     }
 
+    public void freePassiveScan(IHttpRequestResponse messageInfo) {
+        List<BigIPIssueItem> bigIpList = new ArrayList<>();
+        // Response判定
+        if (property.getScanResponse() && messageInfo.getResponse() != null) {
+            bigIpList.addAll(this.parseMessage(false, messageInfo.getResponse()));
+        }
+        // Request判定
+        if (property.getScanRequest() && messageInfo.getRequest() != null) {
+            bigIpList.addAll(this.parseMessage(true, messageInfo.getRequest()));
+        }
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < bigIpList.size(); i++) {
+            BigIPIssueItem item = bigIpList.get(i);
+            //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
+            // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+            if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
+                continue;
+            }
+            if (buff.length() == 0) {
+                buff.append("BigIP:");
+            } else {
+                buff.append(", ");
+            }
+            buff.append(item.getIPAddr());
+        }
+        if (buff.length() > 0) {
+            if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
+                messageInfo.setHighlight(property.getHighlightColor().toString());
+            }
+            if (property.getNotifyTypes().contains(NotifyType.COMMENT)) {
+                messageInfo.setComment(buff.toString());
+            }
+        }
+    }
+        
+    private final BigIPCookieProperty property = new BigIPCookieProperty();
+    
+    public String settingName() {
+        return BIGIP_COOKIE_PROPERTY;
+    }
+    
+    public void saveSetting(String value) {
+        BigIPCookieProperty bigIPCookie = JsonUtil.jsonFromString(value, BigIPCookieProperty.class, true);
+        this.property.setProperty(bigIPCookie);
+        this.tabBigIPCookie.setProperty(this.property);    
+    }
+
+    public String loadSetting() {
+        BigIPCookieProperty bigIPCookie = this.tabBigIPCookie.getProperty();
+        this.property.setProperty(bigIPCookie);
+        return JsonUtil.jsonToString(this.property, true);
+    }
+                
+    @Override
+    public String getTabCaption() {
+        return this.tabBigIPCookie.getTabCaption();
+    }
+
+    @Override
+    public Component getUiComponent() {
+        return this.tabBigIPCookie.getUiComponent();
+    }
+    
 }

@@ -98,7 +98,7 @@ Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpE
   * https://github.com/google/gson/blob/master/LICENSE
 
 Operation is confirmed with the following versions.
-* Burp suite v2.1.0
+* Burp suite v2.1.07
 
 ## important
 This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.

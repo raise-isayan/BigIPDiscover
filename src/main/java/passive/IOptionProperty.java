@@ -1,6 +1,6 @@
 package passive;
 
-import passive.signature.BigIPCookieProperty;
+import java.util.Map;
 
 /**
  *
@@ -8,10 +8,8 @@ import passive.signature.BigIPCookieProperty;
  */
 public interface IOptionProperty {
 
-    public final static String BIGIP_COOKIE_PROPERTY = "BigIPCookieProperty";
-    
-    public BigIPCookieProperty getBigIPCookieProperty();
+    public void saveSignatureSetting(final Map<String, String> value);
 
-    public void setBigIPCookieProperty(BigIPCookieProperty scan);
+    public Map<String, String> loadSignatureSetting();
 
 }

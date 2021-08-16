@@ -1,7 +1,7 @@
 package passive;
 
-import com.google.gson.annotations.Expose;
-import passive.signature.BigIPCookieProperty;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -9,22 +9,16 @@ import passive.signature.BigIPCookieProperty;
  */
 public class OptionProperty implements IOptionProperty {
 
-    /* IOptionProperty implements */
-    @Expose
-    private final BigIPCookieProperty bigipCookieProperty = new BigIPCookieProperty();
-
+    private final Map<String, String> config = new HashMap(); 
+    
     @Override
-    public BigIPCookieProperty getBigIPCookieProperty() {
-        return this.bigipCookieProperty;
+    public void saveSignatureSetting(final Map<String, String> value) {
+        this.config.putAll(value);
     }
 
     @Override
-    public void setBigIPCookieProperty(BigIPCookieProperty property) {
-        this.bigipCookieProperty.setProperty(property);
+    public Map<String, String> loadSignatureSetting() {
+        return this.config;
     }
-
-    public void setProperty(OptionProperty property) {
-        this.setBigIPCookieProperty(property.getBigIPCookieProperty());
-    }
-
+    
 }

@@ -363,27 +363,27 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
     }//GEN-LAST:event_btnDecryptActionPerformed
 
     private void cmbHighlightColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbHighlightColorActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_cmbHighlightColorActionPerformed
 
     private void chkPrivateIPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkPrivateIPActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkPrivateIPActionPerformed
 
     private void chkRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkRequestActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkRequestActionPerformed
 
     private void chkResponseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkResponseActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkResponseActionPerformed
 
     private void chkItem_highlightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkItem_highlightActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chkItem_highlightActionPerformed
 
     private void chk_CommentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chk_CommentActionPerformed
-        this.firePropertyChange(IOptionProperty.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
+        this.firePropertyChange(BigIPCookie.BIGIP_COOKIE_PROPERTY, null, this.getProperty());
     }//GEN-LAST:event_chk_CommentActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -447,7 +447,6 @@ public class BigIPCookieTab extends javax.swing.JPanel implements ITab {
             property.setHighlightColor((HighlightColor) this.cmbHighlightColor.getSelectedItem());
         }
         property.setDetectionPrivateIP(this.chkPrivateIP.isSelected());
-
         return property;
     }
 
