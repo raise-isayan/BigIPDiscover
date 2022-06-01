@@ -1,6 +1,5 @@
 package passive.signature;
 
-import passive.SignatureItem;
 import burp.BurpExtender;
 import burp.IHttpRequestResponse;
 import burp.IHttpRequestResponseWithMarkers;
@@ -11,6 +10,7 @@ import burp.IScanIssue;
 import burp.IScannerCheck;
 import burp.ITab;
 import extension.burp.Confidence;
+import extension.burp.IPropertyConfig;
 import extension.burp.NotifyType;
 import extension.burp.ScannerCheckAdapter;
 import extension.burp.Severity;
@@ -25,22 +25,26 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import passive.IssueItem;
+import passive.SignatureScanBase;
 
 /**
  *
  * @author isayan
  */
-public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, ISignatureConfig {
 
-    public final static String BIGIP_COOKIE_PROPERTY = StringUtil.toCamelCase(BigIPCookieProperty.class.getSimpleName());
-        
+public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implements ITab, IPropertyConfig {
+    private final static Logger logger = Logger.getLogger(BigIPCookieScan.class.getName());
+
+    public final static String SIGNATURE_PROPERTY = "bigipCookieProperty";
+
     private final BigIPCookieTab tabBigIPCookie = new BigIPCookieTab();
 
-    public BigIPCookie() {
-        super("BIG-IP Cookie Discloses IP Address", Severity.LOW);
+    public BigIPCookieScan() {
+        super("BIG-IP Cookie Discloses IP Address");
         this.tabBigIPCookie.addPropertyChangeListener(this.newPropertyChangeListener());
     }
 
@@ -48,29 +52,33 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
         return new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (BIGIP_COOKIE_PROPERTY.equals(evt.getPropertyName())) {
+                if (SIGNATURE_PROPERTY.equals(evt.getPropertyName())) {
                     BigIPCookieProperty bigIPCookie = tabBigIPCookie.getProperty();
                     property.setProperty(bigIPCookie);
                 }
             }
         };
     }
-    
+
     @Override
     public IScannerCheck passiveScanCheck() {
         return new ScannerCheckAdapter() {
             @Override
             public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
-                List<IScanIssue> issue = null;
+                ArrayList<IScanIssue> issues = new ArrayList<>();
                 // Response判定
                 if (property.getScanResponse() && baseRequestResponse.getResponse() != null) {
-                    issue = makeIssueList(false, baseRequestResponse, parseMessage(false, baseRequestResponse.getResponse()));
+                    issues.addAll(makeIssueList(false, baseRequestResponse, parseMessage(false, baseRequestResponse.getResponse())));
                 }
                 // Request判定
-                if (issue == null && property.getScanRequest() && baseRequestResponse.getRequest() != null) {
-                    issue = makeIssueList(true, baseRequestResponse, parseMessage(true, baseRequestResponse.getRequest()));
+                if (issues.isEmpty() && property.getScanRequest() && baseRequestResponse.getRequest() != null) {
+                    issues.addAll(makeIssueList(true, baseRequestResponse, parseMessage(true, baseRequestResponse.getRequest())));
                 }
-                return issue;
+                if (issues.isEmpty()) {
+                    return null;
+                } else {
+                    return issues;
+                }
             }
 
             public List<IScanIssue> makeIssueList(boolean messageIsRequest, IHttpRequestResponse baseRequestResponse, List<BigIPIssueItem> issueList) {
@@ -83,14 +91,13 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
                     }
                     markList.add(item);
                 }
-                if (markList.size() > 0) {
-                    List<IScanIssue> issues = new ArrayList<>();
-                    IHttpRequestResponseWithMarkers applyMarks = applyMarkers(baseRequestResponse, markList);
-                    issues.add(makeScanIssue(applyMarks, markList));
+                List<IScanIssue> issues = new ArrayList<>();
+                if (markList.isEmpty()) {
                     return issues;
-                } else {
-                    return null;
                 }
+                IHttpRequestResponseWithMarkers applyMarks = applyMarkers(baseRequestResponse, markList);
+                issues.add(makeScanIssue(applyMarks, markList));
+                return issues;
             }
 
         };
@@ -102,10 +109,10 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
         return new IScanIssue() {
 
             public BigIPIssueItem getItem() {
-                if (issueItem.size() > 0) {
-                    return issueItem.get(0);
-                } else {
+                if (issueItem.isEmpty()) {
                     return null;
+                } else {
+                    return issueItem.get(0);
                 }
             }
 
@@ -117,7 +124,7 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
 
             @Override
             public String getIssueName() {
-                return BigIPCookie.this.getIssueName();
+                return BigIPCookieScan.this.getIssueName();
             }
 
             @Override
@@ -144,17 +151,17 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
             @Override
             public String getIssueBackground() {
                 final String ISSUE_BACKGROUND = "\r\n"
-                        + "<h4>Reference:</h4>"
-                        + "<ul>"
-                        + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
-                        + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
-                        + "</ul>"
                         + "<h4>Examples:</h4>"
                         + "<ul>"
                         + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>"
                         + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
                         + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>"
                         + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
+                        + "</ul>"
+                        + "<h4>Reference:</h4>"
+                        + "<ul>"
+                        + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                        + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
                         + "</ul>";
                 return ISSUE_BACKGROUND;
             }
@@ -232,8 +239,8 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
         return cookieIPList;
     }
 
-    private final static Pattern REQUEST_COOKE = Pattern.compile("^Cookie: (.*)$", Pattern.MULTILINE);
-    private final static Pattern RESPONSE_COOKE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.MULTILINE);
+    private final static Pattern REQUEST_COOKIE = Pattern.compile("^Cookie: (.*)$",  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    private final static Pattern RESPONSE_COOKIE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     /**
      * https://www.owasp.org/index.php/SCG_D_BIGIP
@@ -246,31 +253,29 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
      *
      */
     private final static String IPv4_PREFIX = "00000000000000000000ffff";
-    private final static Pattern BIGIP_COOKIE = Pattern.compile("(BIGipServer[^\\s=]*?|[^\\s=]*?)=([0-9a-z.]+)");
+    private final static Pattern BIGIP_COOKIE = Pattern.compile("(BIGipServer[^\\s=]*?|[^\\s=]*?)=([0-9A-Za-z.]+)", Pattern.CASE_INSENSITIVE);
     private final static Pattern BIGIP_STANDARD = Pattern.compile("(\\d+)\\.(\\d+)\\.0000");
-    private final static Pattern BIGIP_STANDARD_VI = Pattern.compile("vi(\\d+)\\.(\\d+)");
-    private final static Pattern BIGIP_STANDARD_RD = Pattern.compile("rd\\d+o([0-9a-z]+)o(\\d+)");
+    private final static Pattern BIGIP_STANDARD_VI = Pattern.compile("vi([0-9A-Fa-f]+)\\.(\\d+)");
+    private final static Pattern BIGIP_STANDARD_RD = Pattern.compile("rd\\d+o([0-9A-Fa-f]+)o(\\d+)");
 
     public static List<BigIPIssueItem> parseHeader(boolean messageIsRequest, byte[] messageByte) {
         List<BigIPIssueItem> list = new ArrayList<>();
         String message = StringUtil.getStringRaw(messageByte);
-        String cookieAll = null;
-        int cookieOffset = 0;
 
         if (messageIsRequest) {
             // Cookieの取得
-            Matcher m = REQUEST_COOKE.matcher(message);
+            Matcher m = REQUEST_COOKIE.matcher(message);
             while (m.find()) {
-                cookieOffset = m.start(1);
-                cookieAll = m.group(1);
+                int cookieOffset = m.start(1);
+                String cookieAll = m.group(1);
                 list.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         } else {
             // Set-Cookieの取得
-            Matcher m = RESPONSE_COOKE.matcher(message);
+            Matcher m = RESPONSE_COOKIE.matcher(message);
             while (m.find()) {
-                cookieOffset = m.start(1);
-                cookieAll = m.group(1);
+                int cookieOffset = m.start(1);
+                String cookieAll = m.group(1);
                 list.addAll(parseDecryptList(messageIsRequest, cookieAll, cookieOffset));
             }
         }
@@ -321,7 +326,11 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
             if (m1.find()) {
                 String enc_ip = m1.group(1);
                 String enc_port = m1.group(2);
-                ipaddr = String.format("%s:%d", IpUtil.decimalToIPv4(Long.parseLong(enc_ip), ByteOrder.LITTLE_ENDIAN), IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.LITTLE_ENDIAN));
+                String ip_addr = IpUtil.decimalToIPv4(Long.parseLong(enc_ip), ByteOrder.LITTLE_ENDIAN);
+                int ip_port = IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.LITTLE_ENDIAN);
+                if (IpUtil.isIPv4Valid(ip_addr, ip_port)) {
+                    ipaddr = String.format("%s:%d", ip_addr, ip_port);
+                }
             }
         }
         if (ipaddr == null) {
@@ -329,7 +338,11 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
             if (m1.find()) {
                 String enc_ip = m1.group(1);
                 String enc_port = m1.group(2);
-                ipaddr = String.format("%s:%d", IpUtil.hexToIPv6(enc_ip), IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.LITTLE_ENDIAN));
+                String ip_addr = IpUtil.hexToIPv6(enc_ip);
+                int ip_port = IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.LITTLE_ENDIAN);
+                if (IpUtil.isIPv6Valid(ip_addr, ip_port)) {
+                    ipaddr = String.format("%s:%d", ip_addr, ip_port);
+                }
             }
         }
         if (ipaddr == null) {
@@ -339,9 +352,17 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
                 String enc_port = m1.group(2);
                 // ::ffff
                 if (enc_ip.startsWith(IPv4_PREFIX)) {
-                    ipaddr = String.format("%s:%d", IpUtil.hexToIPv4(enc_ip.substring(IPv4_PREFIX.length()), ByteOrder.BIG_ENDIAN), IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.BIG_ENDIAN));
+                    String ip_addr = IpUtil.hexToIPv4(enc_ip.substring(IPv4_PREFIX.length()), ByteOrder.BIG_ENDIAN);
+                    int ip_port = IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.BIG_ENDIAN);
+                    if (IpUtil.isIPv4Valid(ip_addr, ip_port)) {
+                        ipaddr = String.format("%s:%d", ip_addr, ip_port);
+                    }
                 } else {
-                    ipaddr = String.format("%s:%d", IpUtil.hexToIPv6(enc_ip), IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.BIG_ENDIAN));
+                    String ip_addr = IpUtil.hexToIPv6(enc_ip);
+                    int ip_port = IpUtil.decimalToPort(Integer.parseInt(enc_port), ByteOrder.BIG_ENDIAN);
+                    if (IpUtil.isIPv6Valid(ip_addr, ip_port)) {
+                        ipaddr = String.format("%s:%d", IpUtil.hexToIPv6(enc_ip), ip_port);
+                    }
                 }
             }
         }
@@ -382,33 +403,43 @@ public class BigIPCookie extends SignatureItem<BigIPIssueItem> implements ITab, 
             }
         }
     }
-        
-    private final BigIPCookieProperty property = new BigIPCookieProperty();
-    
-    public String settingName() {
-        return BIGIP_COOKIE_PROPERTY;
-    }
-    
-    public void saveSetting(String value) {
-        BigIPCookieProperty bigIPCookie = JsonUtil.jsonFromString(value, BigIPCookieProperty.class, true);
-        this.property.setProperty(bigIPCookie);
-        this.tabBigIPCookie.setProperty(this.property);    
-    }
 
-    public String loadSetting() {
-        BigIPCookieProperty bigIPCookie = this.tabBigIPCookie.getProperty();
-        this.property.setProperty(bigIPCookie);
-        return JsonUtil.jsonToString(this.property, true);
-    }
-                
+    private final BigIPCookieProperty property = new BigIPCookieProperty();
+
     @Override
     public String getTabCaption() {
-        return this.tabBigIPCookie.getTabCaption();
+        return "BIG-IP Cookie";
     }
 
     @Override
     public Component getUiComponent() {
-        return this.tabBigIPCookie.getUiComponent();
+        return this.tabBigIPCookie;
     }
-    
+
+    @Override
+    public String getSettingName() {
+        return SIGNATURE_PROPERTY;
+    }
+
+    @Override
+    public void saveSetting(String value) {
+        BigIPCookieProperty bigIPCookieProperty = JsonUtil.jsonFromString(value, BigIPCookieProperty.class, true);
+
+        this.property.setProperty(bigIPCookieProperty);
+        this.tabBigIPCookie.setProperty(this.property);
+    }
+
+    @Override
+    public String loadSetting() {
+        BigIPCookieProperty bigIPCookieProperty = this.tabBigIPCookie.getProperty();
+        this.property.setProperty(bigIPCookieProperty);
+        return JsonUtil.jsonToString(this.property, true);
+    }
+
+    @Override
+    public String defaultSetting() {
+        BigIPCookieProperty bigIPCookieProperty = new BigIPCookieProperty();
+        return JsonUtil.jsonToString(bigIPCookieProperty, true);
+    }
+
 }

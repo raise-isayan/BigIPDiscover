@@ -1,5 +1,6 @@
 package passive;
 
+import extension.burp.IOptionProperty;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,16 +10,17 @@ import java.util.Map;
  */
 public class OptionProperty implements IOptionProperty {
 
-    private final Map<String, String> config = new HashMap(); 
-    
+    private final Map<String, String> config = new HashMap();
+
+
     @Override
-    public void saveSignatureSetting(final Map<String, String> value) {
-        this.config.putAll(value);
+    public void saveConfigSetting(Map<String, String> map) {
+        this.config.putAll(map);
     }
 
     @Override
-    public Map<String, String> loadSignatureSetting() {
+    public Map<String, String> loadConfigSetting() {
         return this.config;
     }
-    
+
 }

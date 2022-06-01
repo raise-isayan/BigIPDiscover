@@ -1,81 +1,44 @@
 package passive;
 
-import burp.BurpExtender;
-import burp.IHttpRequestResponse;
-import burp.IHttpRequestResponseWithMarkers;
-import burp.IScanIssue;
-import burp.IScannerCheck;
-import extension.burp.ScannerCheckAdapter;
+import burp.ITab;
+import extension.burp.IPropertyConfig;
 import extension.burp.Severity;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
- * @author raise.isayan
+ * @author isayan
  */
-public class SignatureItem<M extends IssueItem> implements ISignatureItem {
+public class SignatureItem extends SignatureSelect {
 
-    public SignatureItem(String issueName, Severity serverity) {
-        this.issueName = issueName;
-        this.serverity = serverity;
+    public SignatureItem(SignatureScanBase<? extends IssueItem> item, Severity serverity) {
+        super(item.getIssueName(), serverity);
+        this.item = item;
     }
 
-    private boolean enable = true;
-
-    /**
-     * @return the enable
-     */
-    @Override
-    public boolean isEnable() {
-        return this.enable;
+    public char getSortOrder() {
+        return 'z';
     }
 
-    /**
-     * @param enable the enable to set
-     */
-    @Override
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    private final SignatureScanBase<? extends IssueItem> item;
+
+    public SignatureScanBase<? extends IssueItem> getSignatureScan() {
+        return item;
     }
 
-    private final String issueName;
-
-    @Override
-    public String getIssueName() {
-        return issueName;
-    }
-
-    private final Severity serverity;
-
-    @Override
-    public Severity getServerity() {
-        return serverity;
-    }
-
-    public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<M> issueItem) {
-        return null;
-    }
-
-    public IScannerCheck passiveScanCheck() {
-        return new ScannerCheckAdapter();
-    }
-
-    public IHttpRequestResponseWithMarkers applyMarkers(IHttpRequestResponse baseRequestResponse, List<M> issueList) {
-        List<int[]> requestMarkers = new ArrayList<>();
-        List<int[]> responseMarkers = new ArrayList<>();
-        for (IssueItem issue : issueList) {
-            if (issue.isMessageIsRequest()) {
-                requestMarkers.add(new int [] { issue.start(), issue.end() });
-            }
-            else {
-                responseMarkers.add(new int [] { issue.start(), issue.end() });
-            }
+    public ITab getBurpTab() {
+        if (item instanceof ITab) {
+            return (ITab) item;
+        } else {
+            return null;
         }
-        List<int[]> applyRequestMarkers = (requestMarkers.size() > 0) ? requestMarkers : null;
-        List<int[]> applyResponseMarkers = (responseMarkers.size() > 0) ? responseMarkers : null;
+    }
 
-        return BurpExtender.getCallbacks().applyMarkers(baseRequestResponse, applyRequestMarkers, applyResponseMarkers);
+    public IPropertyConfig getSignatureConfig() {
+        if (item instanceof IPropertyConfig) {
+            return (IPropertyConfig) item;
+        } else {
+            return null;
+        }
     }
 
 }

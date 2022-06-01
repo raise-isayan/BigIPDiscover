@@ -4,7 +4,7 @@ import extension.helpers.IpUtil;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import passive.signature.BigIPCookie;
+import passive.signature.BigIPCookieScan;
 
 /**
  *
@@ -49,7 +49,7 @@ public class BigIPDiscover {
                 return;
             }
 
-            String bigIPaddr = BigIPCookie.decrypt(encrypt_value);
+            String bigIPaddr = BigIPCookieScan.decrypt(encrypt_value);
             System.out.println("IP addres: " + bigIPaddr);
             System.out.println("PrivateIP: " + IpUtil.isPrivateIP(bigIPaddr));
             System.out.println("LinkLocalIP: " + IpUtil.isLinkLocalIP(bigIPaddr));

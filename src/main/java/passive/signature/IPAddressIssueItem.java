@@ -1,7 +1,6 @@
 package passive.signature;
 
 import extension.helpers.IpUtil;
-import java.text.ParseException;
 import passive.IssueItem;
 
 /**
@@ -11,19 +10,11 @@ import passive.IssueItem;
 public class IPAddressIssueItem extends IssueItem {
 
     public boolean isPrivateIP() {
-        try {
-            return IpUtil.isPrivateIP(this.ipAddr);
-        } catch (ParseException ex) {
-            return false;
-        }
+        return IpUtil.isPrivateIP(this.ipAddr);
     }
 
     public boolean isLinkLocalIP() {
-        try {
-            return IpUtil.isLinkLocalIP(this.ipAddr);
-        } catch (ParseException ex) {
-            return false;
-        }
+        return IpUtil.isLinkLocalIP(this.ipAddr);
     }
                 
     private String ipAddr = "";

@@ -2,7 +2,6 @@ package burp;
 
 import extension.burp.BurpExtenderImpl;
 import passive.Config;
-import passive.signature.BigIPCookie;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import passive.BigIPDiscover;
 import passive.OptionProperty;
+import passive.signature.BigIPCookieScan;
 
 /**
  *
@@ -20,8 +20,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     private final File CONFIG_FILE = new File(Config.getExtensionHomeDir(), Config.getExtensionFile());
 
-    private final BigIPCookie signatureBigIP = new BigIPCookie();
-    
+    private final BigIPCookieScan signatureBigIP = new BigIPCookieScan();
+
     static {
         File logDir = Config.getExtensionHomeDir();
         logDir.mkdirs();
@@ -33,9 +33,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
             public void uncaughtException(Thread t, Throwable e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
-        });    
+        });
     }
-    
+
     public static BurpExtender getInstance() {
         return BurpExtenderImpl.<BurpExtender>getInstance();
     }
@@ -47,7 +47,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         callbacks.setExtensionName(String.format("%s v%s", BigIPDiscover.getProjectName(), BigIPDiscover.getVersion()));
         callbacks.addSuiteTab(this.signatureBigIP);
         callbacks.registerExtensionStateListener(this);
-        Map<String, String> config = this.option.loadSignatureSetting();
+        Map<String, String> config = this.option.loadConfigSetting();
         try {
             if (CONFIG_FILE.exists()) {
                 Config.loadFromJson(CONFIG_FILE, config);
@@ -55,8 +55,8 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         } catch (IOException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
-        String configBigIPCookie = config.get(this.signatureBigIP.settingName());
-        if (configBigIPCookie != null) {    
+        String configBigIPCookie = config.get(this.signatureBigIP.getSettingName());
+        if (configBigIPCookie != null) {
             this.signatureBigIP.saveSetting(configBigIPCookie);
         }
 
@@ -69,7 +69,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
         }
     }
 
-    private IScannerCheck professionalPassiveScanCheck() {        
+    private IScannerCheck professionalPassiveScanCheck() {
         return signatureBigIP.passiveScanCheck();
     }
 
@@ -87,9 +87,9 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
 
     private void applyOptionProperty() {
         try {
-            Map<String, String> config = this.option.loadSignatureSetting();
+            Map<String, String> config = this.option.loadConfigSetting();
             String configBigIPCookie = this.signatureBigIP.loadSetting();
-            config.put(this.signatureBigIP.settingName(), configBigIPCookie);
+            config.put(this.signatureBigIP.getSettingName(), configBigIPCookie);
             Config.saveToJson(CONFIG_FILE, config);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
@@ -99,7 +99,7 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     }
 
     private final OptionProperty option = new OptionProperty();
-    
+
     public OptionProperty getProperty() {
         return this.option;
     }
@@ -108,5 +108,5 @@ public class BurpExtender extends BurpExtenderImpl implements IBurpExtender, IHt
     public void extensionUnloaded() {
         applyOptionProperty();
     }
-        
+
 }
