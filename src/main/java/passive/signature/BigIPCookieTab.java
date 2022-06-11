@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import passive.common.JMultilineLabel;
 
 /**
  *
@@ -23,7 +24,7 @@ import javax.swing.event.DocumentListener;
  */
 public class BigIPCookieTab extends javax.swing.JPanel {
 
-    private final String PRIVATE_IP_INFO = "<html><ul><li>PrivateIP: %s</li><li>LinkLocalIP: %s</li></ul></html>";
+    private final String PRIVATE_IP_INFO = "PrivateIP: %s\nLinkLocalIP: %s";
 
     /**
      * Creates new form BigIpDecryptTab
@@ -49,7 +50,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtEncrypt = new javax.swing.JTextArea();
         btnDecrypt = new javax.swing.JButton();
-        lblDecryptInfo = new javax.swing.JLabel();
+        pnlMessage = new javax.swing.JPanel();
         pnlOptions = new javax.swing.JPanel();
         pnlScanHeader = new javax.swing.JPanel();
         chkResponse = new javax.swing.JCheckBox();
@@ -60,7 +61,6 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         chkItem_highlight = new javax.swing.JCheckBox();
         pnlDetectionOption = new javax.swing.JPanel();
         chkPrivateIP = new javax.swing.JCheckBox();
-        jLabel1 = new javax.swing.JLabel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -80,10 +80,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             }
         });
 
-        lblDecryptInfo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        lblDecryptInfo.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        lblDecryptInfo.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        lblDecryptInfo.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        pnlMessage.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout pnlDecryptLayout = new javax.swing.GroupLayout(pnlDecrypt);
         pnlDecrypt.setLayout(pnlDecryptLayout);
@@ -91,16 +88,15 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             pnlDecryptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlDecryptLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(pnlDecryptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlDecryptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlDecryptLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlDecryptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlDecryptLayout.createSequentialGroup()
-                                .addComponent(btnDecrypt)
-                                .addGap(0, 85, Short.MAX_VALUE))
-                            .addComponent(lblDecryptInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(btnDecrypt)
+                        .addGap(0, 107, Short.MAX_VALUE))
+                    .addComponent(pnlMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlDecryptLayout.setVerticalGroup(
@@ -108,14 +104,14 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDecryptLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlDecryptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlDecryptLayout.createSequentialGroup()
                         .addComponent(btnDecrypt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblDecryptInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
+                        .addComponent(pnlMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
         );
 
         tabbetOption.addTab("Decrypt", pnlDecrypt);
@@ -195,7 +191,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                         .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(chkItem_highlight)
                     .addComponent(chk_Comment))
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addContainerGap(173, Short.MAX_VALUE))
         );
         pnlFreeScanLayout.setVerticalGroup(
             pnlFreeScanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -210,6 +206,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         );
 
         pnlDetectionOption.setBorder(javax.swing.BorderFactory.createTitledBorder("Detection Option"));
+        pnlDetectionOption.setLayout(new java.awt.BorderLayout());
 
         chkPrivateIP.setText("Private IP Only");
         chkPrivateIP.addActionListener(new java.awt.event.ActionListener() {
@@ -217,31 +214,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                 chkPrivateIPActionPerformed(evt);
             }
         });
-
-        jLabel1.setText("<html><ul><li>PrivateIP: Severity: Low</li><li>OtherIP: Severity: Info</li></ul> ");
-
-        javax.swing.GroupLayout pnlDetectionOptionLayout = new javax.swing.GroupLayout(pnlDetectionOption);
-        pnlDetectionOption.setLayout(pnlDetectionOptionLayout);
-        pnlDetectionOptionLayout.setHorizontalGroup(
-            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(chkPrivateIP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        pnlDetectionOptionLayout.setVerticalGroup(
-            pnlDetectionOptionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetectionOptionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chkPrivateIP)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jLabel1.getAccessibleContext().setAccessibleName("");
+        pnlDetectionOption.add(chkPrivateIP, java.awt.BorderLayout.NORTH);
 
         javax.swing.GroupLayout pnlOptionsLayout = new javax.swing.GroupLayout(pnlOptions);
         pnlOptions.setLayout(pnlOptionsLayout);
@@ -260,13 +233,13 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlOptionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlFreeScan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlOptionsLayout.createSequentialGroup()
                         .addComponent(pnlScanHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(105, Short.MAX_VALUE))
+                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(106, Short.MAX_VALUE))
         );
 
         tabbetOption.addTab("Options", pnlOptions);
@@ -285,8 +258,9 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         return freeSupport;
     }
 
-    private void customizeComponents() {
+    private final JMultilineLabel lblDecryptInfo = new JMultilineLabel();
 
+    private void customizeComponents() {
         this.cmbHighlightColor.setModel(
                 new DefaultComboBoxModel(
                         new HighlightColor[]{HighlightColor.RED, HighlightColor.ORANGE,
@@ -308,6 +282,9 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                 return l;
             }
         });
+        this.lblDecryptInfo.setListed(false);
+        this.lblDecryptInfo.setText("");
+        this.pnlMessage.add(this.lblDecryptInfo, java.awt.BorderLayout.NORTH);
         this.txtEncrypt.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -340,7 +317,9 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                 }
             }
         });
-
+        JMultilineLabel mlabel = new JMultilineLabel("PrivateIP: Severity: Low\nOtherIP: Severity: Info");
+        mlabel.setListed(true);
+        this.pnlDetectionOption.add(mlabel, java.awt.BorderLayout.CENTER);
     }
 
     private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
@@ -348,7 +327,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         this.lblDecryptInfo.setText("");
         String value = BigIPCookieScan.decrypt(this.txtEncrypt.getText());
         if (value != null) {
-            if (IpUtil.isIPv4Address(value)) {
+            if (IpUtil.isIPv4Valid(value)) {
                 this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));
                 this.txtDecrypt.setText(value);
             }
@@ -387,13 +366,12 @@ public class BigIPCookieTab extends javax.swing.JPanel {
     private javax.swing.JCheckBox chkResponse;
     private javax.swing.JCheckBox chk_Comment;
     private javax.swing.JComboBox cmbHighlightColor;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lblDecryptInfo;
     private javax.swing.JPanel pnlDecrypt;
     private javax.swing.JPanel pnlDetectionOption;
     private javax.swing.JPanel pnlFreeScan;
+    private javax.swing.JPanel pnlMessage;
     private javax.swing.JPanel pnlOptions;
     private javax.swing.JPanel pnlScanHeader;
     private javax.swing.JTabbedPane tabbetOption;

@@ -1,10 +1,10 @@
 package passive.signature;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.util.EnumSet;
 import extension.burp.HighlightColor;
 import extension.burp.NotifyType;
-import java.util.EnumSet;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  *

@@ -90,7 +90,7 @@ gradlew release
 
 ## Required library
 Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpExtensionCommons) library.
-* BurpExtensionCommons v0.4.x
+* BurpExtensionCommons v0.5.3.x
 
 ## Use Library
 * google gson (https://github.com/google/gson)
@@ -98,7 +98,7 @@ Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpE
   * https://github.com/google/gson/blob/master/LICENSE
 
 Operation is confirmed with the following versions.
-* Burp suite v2.1.07
+* Burp suite pro v2022.3.7
 
 ## important
 This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.

@@ -5,7 +5,6 @@ Language/[English](Readme.md)
 
 このツールは、PortSwigger社の製品であるBurp Suiteの拡張になります。
 
-
 Burp ProfessionalのScannerに対応しています。
 また、Burp Communityの場合でもProxyのHistory機能を利用して検出できます。
 
@@ -93,7 +92,7 @@ gradlew release
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtensionCommons](https://github.com/raise-isayan/BurpExtensionCommons) のライブラリを必要とします。
-* BurpExtensionCommons v0.4.x
+* BurpExtensionCommons v0.5.3.x
 
 ### 利用ライブラリ
 
@@ -102,7 +101,7 @@ gradlew release
   * https://github.com/google/gson/blob/master/LICENSE
 
 以下のバージョンで動作確認しています。
-* Burp suite v2.1.07
+* Burp suite pro v2022.3.7
 
 ## 注意事項
 このツールは、私個人が勝手に開発したもので、PortSwigger社は一切関係ありません。本ツールを使用したことによる不具合等についてPortSwiggerに問い合わせないようお願いします。
