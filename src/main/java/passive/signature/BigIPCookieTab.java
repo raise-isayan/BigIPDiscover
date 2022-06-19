@@ -327,10 +327,8 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         this.lblDecryptInfo.setText("");
         String value = BigIPCookieScan.decrypt(this.txtEncrypt.getText());
         if (value != null) {
-            if (IpUtil.isIPv4Valid(value)) {
-                this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));
-                this.txtDecrypt.setText(value);
-            }
+            this.lblDecryptInfo.setText(String.format(PRIVATE_IP_INFO, IpUtil.isPrivateIP(value), IpUtil.isLinkLocalIP(value)));
+            this.txtDecrypt.setText(value);
         }
     }//GEN-LAST:event_btnDecryptActionPerformed
 
