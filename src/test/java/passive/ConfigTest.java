@@ -1,9 +1,5 @@
 package passive;
 
-import com.google.gson.JsonElement;
-import extension.helpers.FileUtil;
-import extension.helpers.StringUtil;
-import extension.helpers.json.JsonUtil;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
