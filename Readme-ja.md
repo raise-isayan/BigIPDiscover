@@ -92,7 +92,7 @@ gradlew release
 
 ## 必須ライブラリ
 ビルドには別途 [BurpExtensionCommons](https://github.com/raise-isayan/BurpExtensionCommons) のライブラリを必要とします。
-* BurpExtensionCommons v0.5.3.x
+* BurpExtensionCommons v3.1.x
 
 ### 利用ライブラリ
 

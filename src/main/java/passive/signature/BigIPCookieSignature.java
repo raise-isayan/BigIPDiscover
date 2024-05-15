@@ -1,14 +1,14 @@
 package passive.signature;
 
 import extension.burp.Severity;
-import passive.SignatureItem;
+import extension.burp.scanner.SignatureItem;
 
 /**
  *
  * @author isayan
  */
 public class BigIPCookieSignature extends SignatureItem {
-    
+
     public BigIPCookieSignature() {
         super(new BigIPCookieScan(), Severity.LOW);
     }
@@ -16,6 +16,6 @@ public class BigIPCookieSignature extends SignatureItem {
     @Override
     public char getSortOrder() {
         return '5';
-    }    
-    
+    }
+
 }

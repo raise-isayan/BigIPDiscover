@@ -12,7 +12,6 @@ public class OptionProperty implements IOptionProperty {
 
     private final Map<String, String> config = new HashMap();
 
-
     @Override
     public void saveConfigSetting(Map<String, String> map) {
         this.config.putAll(map);

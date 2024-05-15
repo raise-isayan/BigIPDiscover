@@ -1,26 +1,29 @@
 package passive.signature;
 
-import burp.BurpExtender;
-import burp.IHttpRequestResponse;
-import burp.IHttpRequestResponseWithMarkers;
-import burp.IHttpService;
-import burp.IRequestInfo;
-import burp.IResponseInfo;
-import burp.IScanIssue;
-import burp.IScannerCheck;
-import burp.ITab;
+import burp.api.montoya.collaborator.Interaction;
+import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.scanner.AuditResult;
+import burp.api.montoya.scanner.ScanCheck;
+import burp.api.montoya.scanner.audit.issues.AuditIssue;
+import burp.api.montoya.scanner.audit.issues.AuditIssueConfidence;
+import burp.api.montoya.scanner.audit.issues.AuditIssueDefinition;
+import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import extension.burp.Confidence;
+import extension.burp.IBurpTab;
 import extension.burp.IPropertyConfig;
-import extension.burp.NotifyType;
-import extension.burp.ScannerCheckAdapter;
 import extension.burp.Severity;
-import extension.helpers.StringUtil;
+import extension.burp.scanner.IssueItem;
+import extension.burp.scanner.ScannerCheckAdapter;
+import extension.burp.scanner.SignatureScanBase;
+import extension.helpers.HttpRequestWapper;
+import extension.helpers.HttpResponseWapper;
+import extension.helpers.HttpUtil;
 import extension.helpers.IpUtil;
 import extension.helpers.json.JsonUtil;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,15 +31,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import passive.IssueItem;
-import passive.SignatureScanBase;
 
 /**
  *
  * @author isayan
  */
+public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implements IBurpTab, IPropertyConfig {
 
-public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implements ITab, IPropertyConfig {
     private final static Logger logger = Logger.getLogger(BigIPCookieScan.class.getName());
 
     public final static String SIGNATURE_PROPERTY = "bigipCookieProperty";
@@ -61,136 +62,94 @@ public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implement
     }
 
     @Override
-    public IScannerCheck passiveScanCheck() {
+    public ScanCheck passiveScanCheck() {
         return new ScannerCheckAdapter() {
             @Override
-            public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
-                ArrayList<IScanIssue> issues = new ArrayList<>();
+            public AuditResult passiveAudit(HttpRequestResponse baseRequestResponse) {
+                List<AuditIssue> issues = new ArrayList<>();
                 // Response判定
-                if (property.getScanResponse() && baseRequestResponse.getResponse() != null) {
-                    issues.addAll(makeIssueList(false, baseRequestResponse, parseMessage(false, baseRequestResponse.getResponse())));
+                HttpResponseWapper wrapResponse = new HttpResponseWapper(baseRequestResponse.response());
+                if (property.getScanResponse() && wrapResponse.hasHttpResponse()) {
+                    issues.addAll(makeIssueList(false, baseRequestResponse, parseMessage(false, baseRequestResponse)));
                 }
                 // Request判定
-                if (issues.isEmpty() && property.getScanRequest() && baseRequestResponse.getRequest() != null) {
-                    issues.addAll(makeIssueList(true, baseRequestResponse, parseMessage(true, baseRequestResponse.getRequest())));
+                HttpRequestWapper wrapRequest = new HttpRequestWapper(baseRequestResponse.request());
+                if (issues.isEmpty() && property.getScanRequest() && wrapRequest.hasHttpRequest()) {
+                    issues.addAll(makeIssueList(true, baseRequestResponse, parseMessage(true, baseRequestResponse)));
                 }
-                if (issues.isEmpty()) {
-                    return null;
-                } else {
-                    return issues;
-                }
+                return AuditResult.auditResult(issues);
             }
-
-            public List<IScanIssue> makeIssueList(boolean messageIsRequest, IHttpRequestResponse baseRequestResponse, List<BigIPIssueItem> issueList) {
-                List<BigIPIssueItem> markList = new ArrayList<>();
-                for (int i = 0; i < issueList.size(); i++) {
-                    BigIPIssueItem item = issueList.get(i);
-                    // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-                    if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
-                        continue;
-                    }
-                    markList.add(item);
-                }
-                List<IScanIssue> issues = new ArrayList<>();
-                if (markList.isEmpty()) {
-                    return issues;
-                }
-                IHttpRequestResponseWithMarkers applyMarks = applyMarkers(baseRequestResponse, markList);
-                issues.add(makeScanIssue(applyMarks, markList));
-                return issues;
-            }
-
         };
     }
 
-    @Override
-    public IScanIssue makeScanIssue(IHttpRequestResponse messageInfo, List<BigIPIssueItem> issueItem) {
+    public List<AuditIssue> makeIssueList(boolean messageIsRequest, HttpRequestResponse baseRequestResponse, List<BigIPIssueItem> markIssueList) {
+        List<BigIPIssueItem> markList = new ArrayList<>();
+        for (int i = 0; i < markIssueList.size(); i++) {
+            BigIPIssueItem item = markIssueList.get(i);
+            // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+            if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
+                continue;
+            }
+            markList.add(item);
+        }
+        List<AuditIssue> issues = new ArrayList<>();
+        if (!markList.isEmpty()) {
+            HttpRequestResponse applyMarks = applyMarkers(baseRequestResponse, markList);
+            issues.add(makeScanIssue(applyMarks, markList));
+        }
+        return issues;
+    }
 
-        return new IScanIssue() {
+    public AuditIssue makeScanIssue(HttpRequestResponse messageInfo, List<BigIPIssueItem> issueItems) {
+
+        return new AuditIssue() {
 
             public BigIPIssueItem getItem() {
-                if (issueItem.isEmpty()) {
+                if (issueItems.isEmpty()) {
                     return null;
                 } else {
-                    return issueItem.get(0);
+                    return issueItems.get(0);
                 }
             }
 
-            @Override
-            public URL getUrl() {
-                IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
-                return reqInfo.getUrl();
-            }
+            final String ISSUE_BACKGROUND = "\r\n"
+                    + "<h4>Examples:</h4>"
+                    + "<ul>"
+                    + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>"
+                    + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
+                    + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>"
+                    + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
+                    + "</ul>"
+                    + "<h4>Reference:</h4>"
+                    + "<ul>"
+                    + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
+                    + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
+                    + "</ul>";
 
             @Override
-            public String getIssueName() {
+            public String name() {
                 return BigIPCookieScan.this.getIssueName();
             }
 
             @Override
-            public int getIssueType() {
-                /**
-                 * https://portswigger.net/knowledgebase/issues/ Extension
-                 * generated issue
-                 */
-                return 0x08000000;
-            }
-
-            @Override
-            public String getSeverity() {
-                IssueItem item = getItem();
-                return item.getServerity().toString();
-            }
-
-            @Override
-            public String getConfidence() {
-                IssueItem item = getItem();
-                return item.getConfidence().toString();
-            }
-
-            @Override
-            public String getIssueBackground() {
-                final String ISSUE_BACKGROUND = "\r\n"
-                        + "<h4>Examples:</h4>"
-                        + "<ul>"
-                        + "  <li>BIGipServer<pool_name>=1677787402.36895.0000</li>"
-                        + "  <li>BIGipServer<pool_name>=vi20010112000000000000000000000030.20480</li>"
-                        + "  <li>BIGipServer<pool_name>=rd5o00000000000000000000ffffc0000201o80</li>"
-                        + "  <li>BIGipServer<pool_name>=rd3o20010112000000000000000000000030o80</li>"
-                        + "</ul>"
-                        + "<h4>Reference:</h4>"
-                        + "<ul>"
-                        + "  <li><a href=\"https://www.owasp.org/index.php/SCG_D_BIGIP\">https://www.owasp.org/index.php/SCG_D_BIGIP</a></li>"
-                        + "  <li><a href=\"https://support.f5.com/csp/article/K6917\">https://support.f5.com/csp/article/K6917</a></li>"
-                        + "</ul>";
-                return ISSUE_BACKGROUND;
-            }
-
-            @Override
-            public String getRemediationBackground() {
-                return null;
-            }
-
-            @Override
-            public String getIssueDetail() {
+            public String detail() {
                 StringBuilder buff = new StringBuilder();
                 buff.append("<h4>IP Address:</h4>");
-                for (BigIPIssueItem markIP : issueItem) {
+                for (BigIPIssueItem markIP : issueItems) {
                     String cookieType = markIP.isMessageIsRequest() ? "Cookie" : "Set-Cookie";
                     buff.append("<div>");
                     buff.append("<ul>");
                     buff.append("<li>");
-                    buff.append(String.format("%s: %s", cookieType, markIP.getCaptureValue()));
+                    buff.append(String.format("%s: %s", cookieType, HttpUtil.toHtmlEncode(markIP.getCaptureValue())));
                     buff.append("</li>");
                     buff.append("<li>");
-                    buff.append(String.format("ip address: %s", markIP.getIPAddr()));
+                    buff.append(String.format("ip address: %s", HttpUtil.toHtmlEncode(markIP.getIPAddr())));
                     buff.append("</li>");
                     if (markIP.isLinkLocalIP()) {
                         buff.append("<li>");
                         buff.append(String.format("Link local IP: %s", markIP.isLinkLocalIP()));
                         buff.append("</li>");
-                    }
-                    else {
+                    } else {
                         buff.append("<li>");
                         buff.append(String.format("Private IP: %s", markIP.isPrivateIP()));
                         buff.append("</li>");
@@ -203,43 +162,66 @@ public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implement
             }
 
             @Override
-            public String getRemediationDetail() {
+            public String remediation() {
                 return null;
             }
 
             @Override
-            public IHttpRequestResponse[] getHttpMessages() {
-                return new IHttpRequestResponse[]{messageInfo};
+            public HttpService httpService() {
+                return messageInfo.request().httpService();
             }
 
             @Override
-            public IHttpService getHttpService() {
-                return messageInfo.getHttpService();
+            public String baseUrl() {
+                return messageInfo.request().url();
+            }
+
+            @Override
+            public AuditIssueSeverity severity() {
+                IssueItem item = getItem();
+                return item.getServerity().toAuditIssueSeverity();
+            }
+
+            @Override
+            public AuditIssueConfidence confidence() {
+                IssueItem item = getItem();
+                return item.getConfidence().toAuditIssueConfidence();
+            }
+
+            @Override
+            public List<HttpRequestResponse> requestResponses() {
+                return Arrays.asList(messageInfo);
+            }
+
+            @Override
+            public AuditIssueDefinition definition() {
+                return AuditIssueDefinition.auditIssueDefinition(name(), ISSUE_BACKGROUND, remediation(), severity());
+            }
+
+            @Override
+            public List<Interaction> collaboratorInteractions() {
+                return new ArrayList<>();
             }
         };
 
     }
 
-    public List<BigIPIssueItem> parseMessage(boolean messageIsRequest, byte[] message) {
+    public static List<BigIPIssueItem> parseMessage(boolean messageIsRequest, HttpRequestResponse baseRequestResponse) {
         List<BigIPIssueItem> cookieIPList = new ArrayList<>();
         // Response判定
         if (!messageIsRequest) {
-            // ヘッダのみ抽出（逆に遅くなってるかも？）
-            IResponseInfo resInfo = BurpExtender.getHelpers().analyzeResponse(message);
-            byte resHeader[] = Arrays.copyOfRange(message, 0, resInfo.getBodyOffset());
-            cookieIPList.addAll(parseHeader(false, resHeader));
+            HttpResponseWapper wrapResponse = new HttpResponseWapper(baseRequestResponse.response());
+            cookieIPList.addAll(parseHeader(false, wrapResponse.getHeader()));
         }
         // Request判定
-        if (messageIsRequest && message != null) {
-            // ヘッダのみ抽出（逆に遅くなってるかも？）
-            IRequestInfo reqInfo = BurpExtender.getHelpers().analyzeRequest(message);
-            byte reqHeader[] = Arrays.copyOfRange(message, 0, reqInfo.getBodyOffset());
-            cookieIPList.addAll(parseHeader(true, reqHeader));
+        if (messageIsRequest) {
+            HttpRequestWapper wrapRequest = new HttpRequestWapper(baseRequestResponse.request());
+            cookieIPList.addAll(parseHeader(true, wrapRequest.getHeader()));
         }
         return cookieIPList;
     }
 
-    private final static Pattern REQUEST_COOKIE = Pattern.compile("^Cookie: (.*)$",  Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    private final static Pattern REQUEST_COOKIE = Pattern.compile("^Cookie: (.*)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     private final static Pattern RESPONSE_COOKIE = Pattern.compile("^Set-Cookie: (.*)$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     /**
@@ -258,9 +240,8 @@ public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implement
     private final static Pattern BIGIP_STANDARD_VI = Pattern.compile("vi([0-9A-Fa-f]+)\\.(\\d+)");
     private final static Pattern BIGIP_STANDARD_RD = Pattern.compile("rd\\d+o([0-9A-Fa-f]+)o(\\d+)");
 
-    public static List<BigIPIssueItem> parseHeader(boolean messageIsRequest, byte[] messageByte) {
+    public static List<BigIPIssueItem> parseHeader(boolean messageIsRequest, String message) {
         List<BigIPIssueItem> list = new ArrayList<>();
-        String message = StringUtil.getStringRaw(messageByte);
 
         if (messageIsRequest) {
             // Cookieの取得
@@ -367,41 +348,6 @@ public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implement
             }
         }
         return ipaddr;
-    }
-
-    public void freePassiveScan(IHttpRequestResponse messageInfo) {
-        List<BigIPIssueItem> bigIpList = new ArrayList<>();
-        // Response判定
-        if (property.getScanResponse() && messageInfo.getResponse() != null) {
-            bigIpList.addAll(this.parseMessage(false, messageInfo.getResponse()));
-        }
-        // Request判定
-        if (property.getScanRequest() && messageInfo.getRequest() != null) {
-            bigIpList.addAll(this.parseMessage(true, messageInfo.getRequest()));
-        }
-        StringBuilder buff = new StringBuilder();
-        for (int i = 0; i < bigIpList.size(); i++) {
-            BigIPIssueItem item = bigIpList.get(i);
-            //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
-            // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
-            if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
-                continue;
-            }
-            if (buff.length() == 0) {
-                buff.append("BigIP:");
-            } else {
-                buff.append(", ");
-            }
-            buff.append(item.getIPAddr());
-        }
-        if (buff.length() > 0) {
-            if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
-                messageInfo.setHighlight(property.getHighlightColor().toString());
-            }
-            if (property.getNotifyTypes().contains(NotifyType.COMMENT)) {
-                messageInfo.setComment(buff.toString());
-            }
-        }
     }
 
     private final BigIPCookieProperty property = new BigIPCookieProperty();

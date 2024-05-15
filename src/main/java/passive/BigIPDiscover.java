@@ -11,6 +11,7 @@ import passive.signature.BigIPCookieScan;
  * @author isayan
  */
 public class BigIPDiscover {
+
     private final static Logger logger = Logger.getLogger(BigIPDiscover.class.getName());
 
     private final static java.util.ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("burp/resources/release");

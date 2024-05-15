@@ -1,7 +1,7 @@
 package passive.signature;
 
+import extension.burp.scanner.IssueItem;
 import extension.helpers.IpUtil;
-import passive.IssueItem;
 
 /**
  *
@@ -16,9 +16,9 @@ public class IPAddressIssueItem extends IssueItem {
     public boolean isLinkLocalIP() {
         return IpUtil.isLinkLocalIP(this.ipAddr);
     }
-                
+
     private String ipAddr = "";
-    
+
     public String getIPAddr() {
         return this.ipAddr;
     }
@@ -29,5 +29,5 @@ public class IPAddressIssueItem extends IssueItem {
     protected void setIPAddr(String ipAddr) {
         this.ipAddr = ipAddr;
     }
-    
+
 }

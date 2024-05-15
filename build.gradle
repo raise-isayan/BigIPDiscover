@@ -1,15 +1,30 @@
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'application'
+plugins {
+    // Apply the application plugin to add support for building a CLI application in Java.
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'  
+}
 
 repositories {
     mavenCentral()
 }
 
-sourceCompatibility = '11' // -source
-targetCompatibility = '11' // -target
+application {
+    // Define the main class for the application.
+    mainClass = 'passive.signature.ReDoSDetectorTab'
+}
 
-mainClassName = 'passive.BigIPDiscover'
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+shadowJar {
+   mergeServiceFiles()
+   destinationDirectory = file('release')
+   archiveVersion =  "v${release_version_major}"
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -30,22 +45,22 @@ clean.doFirst {
     }
 }
 
-jar {
-    // Keep jar clean:
-    exclude 'META-INF/**', 'about.html', 'module-info.class'
-
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
-
-    from {
-        configurations.runtimeClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-
-    destinationDirectory = file('release')
-    archiveVersion =  "v${release_version_major}"
-
-}
+//jar {
+//    // Keep jar clean:
+//    exclude 'META-INF/**', 'about.html', 'module-info.class'
+//
+//    manifest {
+//        attributes 'Main-Class': mainClassName
+//    }
+//
+//    from {
+//        configurations.runtimeClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+//
+//    destinationDirectory = file('release')
+//    archiveVersion =  "v${release_version_major}"
+//
+//}
 
 task release(type: Zip, dependsOn: ['build']) {
     archiveBaseName ="${rootProject.name}_v${release_version_major}.${release_version_minor}"
@@ -64,17 +79,15 @@ task release(type: Zip, dependsOn: ['build']) {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api
-    implementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
     // https://github.com/raise-isayan/BurpExtensionCommons
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.9.0'
-    // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
-    implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+
+    // https://mvnrepository.com/artifact/net.portswigger.burp.extensions/montoya-api
+    implementation 'net.portswigger.burp.extensions:montoya-api:2023.12.1'
+
     //
     // UnitTest
     // https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api
-    testImplementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
+    testImplementation 'net.portswigger.burp.extensions:montoya-api:2023.12.1'
     testImplementation     'junit:junit:4.13.2'
 }

@@ -5,9 +5,9 @@ package passive.signature;
  * @author isayan
  */
 public class IPCookieIssueItem extends IPAddressIssueItem {
-            
+
     private String encryptCookie = "";
-    
+
     public String getEncryptCookie() {
         return this.encryptCookie;
     }
@@ -18,5 +18,5 @@ public class IPCookieIssueItem extends IPAddressIssueItem {
     protected void setEncryptCookie(String encryptCookie) {
         this.encryptCookie = encryptCookie;
     }
-        
+
 }

@@ -1,7 +1,7 @@
 package passive.signature;
 
-import burp.BurpExtender;
-import extension.burp.HighlightColor;
+import burp.BurpExtension;
+import extension.burp.MessageHighlightColor;
 import extension.burp.NotifyType;
 import extension.helpers.ConvertUtil;
 import extension.helpers.IpUtil;
@@ -16,13 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import passive.common.JMultilineLabel;
+import extension.view.base.JMultilineLabel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author isayan
  */
 public class BigIPCookieTab extends javax.swing.JPanel {
+    private final static Logger logger = Logger.getLogger(BigIPCookieTab.class.getName());
 
     private final String PRIVATE_IP_INFO = "PrivateIP: %s\nLinkLocalIP: %s";
 
@@ -202,7 +205,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                 .addComponent(cmbHighlightColor, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chk_Comment)
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlDetectionOption.setBorder(javax.swing.BorderFactory.createTitledBorder("Detection Option"));
@@ -234,12 +237,12 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             .addGroup(pnlOptionsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pnlFreeScan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pnlFreeScan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnlOptionsLayout.createSequentialGroup()
                         .addComponent(pnlScanHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(106, Short.MAX_VALUE))
+                        .addComponent(pnlDetectionOption, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(93, Short.MAX_VALUE))
         );
 
         tabbetOption.addTab("Options", pnlOptions);
@@ -254,6 +257,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         try {
             freeSupport = ConvertUtil.parseBooleanDefault(BUNDLE.getString("freeSupport"), false);
         } catch (MissingResourceException ex) {
+            logger.log(Level.WARNING, ex.getMessage(), ex);
         }
         return freeSupport;
     }
@@ -263,10 +267,10 @@ public class BigIPCookieTab extends javax.swing.JPanel {
     private void customizeComponents() {
         this.cmbHighlightColor.setModel(
                 new DefaultComboBoxModel(
-                        new HighlightColor[]{HighlightColor.RED, HighlightColor.ORANGE,
-                            HighlightColor.YELLOW, HighlightColor.GREEN, HighlightColor.CYAN,
-                            HighlightColor.BLUE, HighlightColor.PINK, HighlightColor.MAGENTA,
-                            HighlightColor.GRAY}));
+                        new MessageHighlightColor[]{MessageHighlightColor.RED, MessageHighlightColor.ORANGE,
+                            MessageHighlightColor.YELLOW, MessageHighlightColor.GREEN, MessageHighlightColor.CYAN,
+                            MessageHighlightColor.BLUE, MessageHighlightColor.PINK, MessageHighlightColor.MAGENTA,
+                            MessageHighlightColor.GRAY}));
 
         this.cmbHighlightColor.setEnabled(false);
         this.cmbHighlightColor.setRenderer(new DefaultListCellRenderer() {
@@ -274,7 +278,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel l = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                HighlightColor hc = (HighlightColor) value;
+                MessageHighlightColor hc = (MessageHighlightColor) value;
                 if (hc != null) {
                     l.setIcon(hc.toIcon());
                     l.setIconTextGap(2);
@@ -282,7 +286,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
                 return l;
             }
         });
-        this.lblDecryptInfo.setListed(false);
+//        this.lblDecryptInfo.setListed(false);
         this.lblDecryptInfo.setText("");
         this.pnlMessage.add(this.lblDecryptInfo, java.awt.BorderLayout.NORTH);
         this.txtEncrypt.getDocument().addDocumentListener(new DocumentListener() {
@@ -311,14 +315,14 @@ public class BigIPCookieTab extends javax.swing.JPanel {
             @Override
             public void componentShown(ComponentEvent e) {
                 if (isFreeSupport()) {
-                    boolean isProfessional = BurpExtender.getInstance().getBurpVersion().isProfessional();
+                    boolean isProfessional = BurpExtension.getInstance().getBurpVersion().isProfessional();
                     pnlFreeScan.setVisible(isFreeSupport());
                     SwingUtil.setContainerEnable(pnlFreeScan, !isProfessional);
                 }
             }
         });
         JMultilineLabel mlabel = new JMultilineLabel("PrivateIP: Severity: Low\nOtherIP: Severity: Info");
-        mlabel.setListed(true);
+//        mlabel.setListed(true);
         this.pnlDetectionOption.add(mlabel, java.awt.BorderLayout.CENTER);
     }
 
@@ -404,7 +408,7 @@ public class BigIPCookieTab extends javax.swing.JPanel {
         }
         property.setNotifyTypes(notifyTypes);
         if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
-            property.setHighlightColor((HighlightColor) this.cmbHighlightColor.getSelectedItem());
+            property.setHighlightColor((MessageHighlightColor) this.cmbHighlightColor.getSelectedItem());
         }
         property.setDetectionPrivateIP(this.chkPrivateIP.isSelected());
 

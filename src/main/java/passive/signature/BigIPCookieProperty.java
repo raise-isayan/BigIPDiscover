@@ -1,7 +1,7 @@
 package passive.signature;
 
 import java.util.EnumSet;
-import extension.burp.HighlightColor;
+import extension.burp.MessageHighlightColor;
 import extension.burp.NotifyType;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -32,22 +32,22 @@ public class BigIPCookieProperty extends IPCookieProperty {
 
     @Expose
     @SerializedName("highlightColor")
-    private HighlightColor highlightColor = HighlightColor.RED;
+    private MessageHighlightColor highlightColor = MessageHighlightColor.RED;
 
     /**
      * @return the highlightColor
      */
-    public HighlightColor getHighlightColor() {
+    public MessageHighlightColor getHighlightColor() {
         return this.highlightColor;
     }
 
     /**
      * @param highlightColor the highlightColor to set
      */
-    public void setHighlightColor(HighlightColor highlightColor) {
+    public void setHighlightColor(MessageHighlightColor highlightColor) {
         this.highlightColor = highlightColor;
     }
-    
+
     public void setProperty(BigIPCookieProperty property) {
         super.setProperty(property);
         this.notifyTypes = property.notifyTypes;
