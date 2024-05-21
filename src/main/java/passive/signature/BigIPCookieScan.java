@@ -1,6 +1,7 @@
 package passive.signature;
 
 import burp.api.montoya.collaborator.Interaction;
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.scanner.AuditResult;
@@ -12,6 +13,7 @@ import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import extension.burp.Confidence;
 import extension.burp.IBurpTab;
 import extension.burp.IPropertyConfig;
+import extension.burp.NotifyType;
 import extension.burp.Severity;
 import extension.burp.scanner.IssueItem;
 import extension.burp.scanner.ScannerCheckAdapter;
@@ -348,6 +350,42 @@ public class BigIPCookieScan extends SignatureScanBase<BigIPIssueItem> implement
             }
         }
         return ipaddr;
+    }
+
+
+    public void freePassiveScan(HttpRequestResponse messageInfo, Annotations annotations) {
+        List<BigIPIssueItem> bigIpList = new ArrayList<>();
+        // Response判定
+        if (property.getScanResponse() && messageInfo.hasResponse()) {
+            bigIpList.addAll(parseMessage(false, messageInfo));
+        }
+        // Request判定
+        if (property.getScanRequest()) {
+            bigIpList.addAll(parseMessage(true, messageInfo));
+        }
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < bigIpList.size(); i++) {
+            BigIPIssueItem item = bigIpList.get(i);
+            //System.out.println("bigip:" + bigIpList[i].getEncryptCookie() + "=" + bigIpList[i].getIPAddr());
+            // Private IP Only にチェックがついていてPrivate IPで無い場合はスキップ
+            if (property.isDetectionPrivateIP() && !(item.isPrivateIP() || item.isLinkLocalIP())) {
+                continue;
+            }
+            if (buff.length() == 0) {
+                buff.append("BigIP:");
+            } else {
+                buff.append(", ");
+            }
+            buff.append(item.getIPAddr());
+        }
+        if (buff.length() > 0) {
+            if (property.getNotifyTypes().contains(NotifyType.ITEM_HIGHLIGHT)) {
+                annotations.setHighlightColor(property.getHighlightColor().toHighlightColor());
+            }
+            if (property.getNotifyTypes().contains(NotifyType.COMMENT)) {
+                annotations.setNotes(buff.toString());
+            }
+        }
     }
 
     private final BigIPCookieProperty property = new BigIPCookieProperty();

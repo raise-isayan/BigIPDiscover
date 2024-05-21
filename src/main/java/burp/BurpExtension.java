@@ -1,6 +1,7 @@
 package burp;
 
 import burp.api.montoya.MontoyaApi;
+import burp.api.montoya.core.Annotations;
 import burp.api.montoya.core.ToolSource;
 import burp.api.montoya.core.ToolType;
 import burp.api.montoya.extension.ExtensionUnloadingHandler;
@@ -18,6 +19,8 @@ import extension.burp.BurpExtensionImpl;
 import static extension.burp.BurpExtensionImpl.api;
 import extension.burp.IBurpTab;
 import extension.burp.IPropertyConfig;
+import extension.burp.scanner.IssueItem;
+import extension.burp.scanner.SignatureScanBase;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -60,6 +63,7 @@ public class BurpExtension extends BurpExtensionImpl implements HttpHandler, Ext
             }
         }
         api().scanner().registerScanCheck(this.signature.getSignatureScan().passiveScanCheck());
+
         api.http().registerHttpHandler(this);
         api.extension().registerUnloadingHandler(this);
         this.tabBigIPCookie.addPropertyChangeListener(newPropertyChangeListener());
@@ -109,16 +113,22 @@ public class BurpExtension extends BurpExtensionImpl implements HttpHandler, Ext
     @Override
     public ResponseReceivedAction handleHttpResponseReceived(HttpResponseReceived responseReceived) {
         ToolSource toolSource = responseReceived.toolSource();
-        if (toolSource.isFromTool(ToolType.REPEATER)) {
-//            api().siteMap().add(HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived));
-            ScanCheck scan = this.signature.getSignatureScan().passiveScanCheck();
-            AuditResult audit = scan.passiveAudit(HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived));
-            BurpExtension.helpers().outPrintln("issue:" + responseReceived.initiatingRequest().url() + "." + audit.auditIssues().size());
-            for (AuditIssue auditIssue : audit.auditIssues()) {
-                api().siteMap().add(auditIssue);
+        Annotations annotations = responseReceived.annotations();
+        HttpRequestResponse messageInfo = HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived);
+        if (this.signature.getSignatureScan() instanceof BigIPCookieScan scan) {
+            if (toolSource.isFromTool(ToolType.PROXY) && !this.getBurpVersion().isProfessional()) {
+                scan.freePassiveScan(messageInfo, annotations);
+            }
+            if (toolSource.isFromTool(ToolType.REPEATER) && this.getBurpVersion().isProfessional()) {
+    //            api().siteMap().add(HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived));
+                AuditResult audit = scan.passiveScanCheck().passiveAudit(messageInfo);
+                BurpExtension.helpers().outPrintln("issue:" + responseReceived.initiatingRequest().url() + "." + audit.auditIssues().size());
+                for (AuditIssue auditIssue : audit.auditIssues()) {
+                    api().siteMap().add(auditIssue);
+                }
             }
         }
-        return ResponseReceivedAction.continueWith(responseReceived, responseReceived.annotations());
+        return ResponseReceivedAction.continueWith(responseReceived, annotations);
     }
 
 }
