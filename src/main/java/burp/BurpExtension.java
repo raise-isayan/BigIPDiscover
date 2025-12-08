@@ -13,14 +13,11 @@ import burp.api.montoya.http.handler.ResponseReceivedAction;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.persistence.Preferences;
 import burp.api.montoya.scanner.AuditResult;
-import burp.api.montoya.scanner.ScanCheck;
 import burp.api.montoya.scanner.audit.issues.AuditIssue;
 import extension.burp.BurpExtensionImpl;
 import static extension.burp.BurpExtensionImpl.api;
 import extension.burp.IBurpTab;
 import extension.burp.IPropertyConfig;
-import extension.burp.scanner.IssueItem;
-import extension.burp.scanner.SignatureScanBase;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -120,7 +117,7 @@ public class BurpExtension extends BurpExtensionImpl implements HttpHandler, Ext
                 scan.freePassiveScan(messageInfo, annotations);
             }
             if (toolSource.isFromTool(ToolType.REPEATER) && this.getBurpVersion().isProfessional()) {
-    //            api().siteMap().add(HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived));
+                //            api().siteMap().add(HttpRequestResponse.httpRequestResponse(responseReceived.initiatingRequest(), responseReceived));
                 AuditResult audit = scan.passiveScanCheck().passiveAudit(messageInfo);
                 BurpExtension.helpers().outPrintln("issue:" + responseReceived.initiatingRequest().url() + "." + audit.auditIssues().size());
                 for (AuditIssue auditIssue : audit.auditIssues()) {
