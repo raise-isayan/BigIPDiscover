@@ -97,8 +97,9 @@ Building requires a [BurpExtensionCommons](https://github.com/raise-isayan/BurpE
   * Apache License 2.0
   * https://github.com/google/gson/blob/master/LICENSE
 
-Operation is confirmed with the following versions.
-* Burp suite pro v2022.3.7
+Please use the following versions
+
+* Burp suite v2024.2.1.3 or above
 
 ## important
 This tool developed by my own personal use, PortSwigger company is not related at all. Please do not ask PortSwigger about problems, etc. caused by using this tool.

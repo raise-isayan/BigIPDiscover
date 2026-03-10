@@ -100,8 +100,9 @@ gradlew release
   * Apache License 2.0
   * https://github.com/google/gson/blob/master/LICENSE
 
-以下のバージョンで動作確認しています。
-* Burp suite pro v2022.3.7
+利用するバージョンは以下のものをご利用ください
+
+* Burp Suite v2024.2.1.3 より後のバージョン
 
 ## 注意事項
 このツールは、私個人が勝手に開発したもので、PortSwigger社は一切関係ありません。本ツールを使用したことによる不具合等についてPortSwiggerに問い合わせないようお願いします。
